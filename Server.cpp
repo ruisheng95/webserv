@@ -77,10 +77,11 @@ void	print_server(Server &server)
 	cout << endl;
     cout << "Error Pages:" << std::endl;
 	std::map<string,string> error_pages= server.get_error_pages();
-    for (std::map<string,string>::iterator it = error_pages.begin(); it != error_pages.end(); it++)
+    for (std::map<string,string>::iterator it = error_pages.begin(); it != error_pages.end(); it++) {
         cout << "Error Code: " << it->first << " -> Page: " << it->second << std::endl;
-	
-	cout << endl;
+    }
+
+    cout << endl;
 	cout << "Locations: " << endl;
 	for (std::vector<Location>::iterator it = server.get_location().begin(); it != server.get_location().end(); it++)
 		it->print_location();

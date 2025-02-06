@@ -35,7 +35,7 @@ class Server
 		void	set_client_max_body_size(string client_body_size);
 		void	set_get_location(std::vector<Location> location);
 
-		static vector<std::pair<string, string> > socket_addr; //to keep track of all the sockets we need to monitor
+		static vector<std::pair<string, string> > socket_addr; //to keep track of all the sockets we need to monitor (TODO set private?)
 };
 
 void	print_server(Server &server);

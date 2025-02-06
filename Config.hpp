@@ -20,7 +20,7 @@ class Config
 
 	public:
 		Config(std::string path);
-		void	readfile();
+		void	readfile(); // Move to private
 		void	skip_whitespaces(size_t &pos);
 		void	parse_server_block(size_t &pos, std::vector<Server> &server_list);
 		void	main_parse_function(std::vector<Server> &server_list);

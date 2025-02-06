@@ -71,13 +71,13 @@ void	Location::parse_allowed_methods(size_t &pos, string file_data)
 	
 	//check for space after 'allowed_methods'
 	if(file_data[pos] != ' ' && file_data[pos] != '\t')
-		throw CustomException("Error: need whitespace after 'allowed methods'");
+		throw std::runtime_error("Error: need whitespace after 'allowed methods'");
 	skip_whitespaces(pos, file_data);
 
 	//find ';'
 	size_t temp = file_data.find_first_of(";" , pos);
 	if(temp == std::string::npos)
-		throw CustomException("Error: can't find ';' in allowed methods");
+		throw std::runtime_error("Error: can't find ';' in allowed methods");
 	
 	//extract methods
 	size_t temp2 = pos;
@@ -103,18 +103,18 @@ void	Location::parse_root(size_t &pos, string file_data)
 
 	//check for space after 'root'
 	if(file_data[pos] != ' ' && file_data[pos] != '\t')
-		throw CustomException("Error: need whitespace after 'root'");
+		throw std::runtime_error("Error: need whitespace after 'root'");
 	skip_whitespaces(pos, file_data);
 
 	//find ';'
 	size_t temp = file_data.find_first_of(";" , pos);
 	if(temp == std::string::npos)
-		throw CustomException("Error: can't find ';' in root");
+		throw std::runtime_error("Error: can't find ';' in root");
 	string path = file_data.substr(pos, temp - pos);
 
 	//check path and assign root
 	if(path[0] != '/')
-		throw CustomException("Error root path must begin wif '/'");
+		throw std::runtime_error("Error root path must begin wif '/'");
 	this->root = path;
 
 	//adjust pos;
@@ -127,13 +127,13 @@ void	Location::parse_index(size_t &pos, string file_data)
 
 	//check for space after 'index'
 	if(file_data[pos] != ' ' && file_data[pos] != '\t')
-		throw CustomException("Error: need whitespace after 'index'");
+		throw std::runtime_error("Error: need whitespace after 'index'");
 	skip_whitespaces(pos, file_data);
 
 	//find ';'
 	size_t temp = file_data.find_first_of(";" , pos);
 	if(temp == std::string::npos)
-		throw CustomException("Error: can't find ';' in index");
+		throw std::runtime_error("Error: can't find ';' in index");
 
 	//extract index pages
 	size_t temp2 = pos;
@@ -158,18 +158,18 @@ void	Location::parse_cgi_pass(size_t &pos, string file_data)
 
 	//check for space after 'cgi_pass'
 	if(file_data[pos] != ' ' && file_data[pos] != '\t')
-		throw CustomException("Error: need whitespace after 'cgi_pass'");
+		throw std::runtime_error("Error: need whitespace after 'cgi_pass'");
 	skip_whitespaces(pos, file_data);
 
 	//find ';'
 	size_t temp = file_data.find_first_of(";" , pos);
 	if(temp == std::string::npos)
-		throw CustomException("Error: can't find ';' in cgi_pass");
+		throw std::runtime_error("Error: can't find ';' in cgi_pass");
 	string path = file_data.substr(pos, temp - pos);
 
 	//check path and assign cgi pass
 	if(path[0] != '/')
-		throw CustomException("Error root path must begin wif '/'");
+		throw std::runtime_error("Error root path must begin wif '/'");
 	this->cgi_pass = path;
 
 	//adjust pos;
@@ -182,13 +182,13 @@ void	Location::parse_return(size_t &pos, string file_data)
 
 	//check for space after 'return'
 	if(file_data[pos] != ' ' && file_data[pos] != '\t')
-		throw CustomException("Error: need whitespace after 'return'");
+		throw std::runtime_error("Error: need whitespace after 'return'");
 	skip_whitespaces(pos, file_data);
 
 	//find ';'
 	size_t temp = file_data.find_first_of(";" , pos);
 	if(temp == std::string::npos)
-		throw CustomException("Error: can't find ';' in return");
+		throw std::runtime_error("Error: can't find ';' in return");
 	string path = file_data.substr(pos, temp - pos);
 
 	this->return_ = path;
@@ -203,13 +203,13 @@ void	Location::parse_autoindex(size_t &pos, string file_data)
 
 	//check for space after 'autoindex'
 	if(file_data[pos] != ' ' && file_data[pos] != '\t')
-		throw CustomException("Error: need whitespace after 'autoindex'");
+		throw std::runtime_error("Error: need whitespace after 'autoindex'");
 	skip_whitespaces(pos, file_data);
 
 	//find ';'
 	size_t temp = file_data.find_first_of(";" , pos);
 	if(temp == std::string::npos)
-		throw CustomException("Error: can't find ';' in return");
+		throw std::runtime_error("Error: can't find ';' in return");
 	string status = file_data.substr(pos, temp - pos);
 
 	if(status == "on")
@@ -217,7 +217,7 @@ void	Location::parse_autoindex(size_t &pos, string file_data)
 	else if(status =="off")
 		this->autoindex = false;
 	else
-		throw CustomException("Error: unknown string after 'autoindex'");
+		throw std::runtime_error("Error: unknown string after 'autoindex'");
 
 	//adjust pos;
 	pos = temp + 1;
@@ -233,7 +233,7 @@ void	Location::parse_location_main(size_t &pos, string file_data)
 
 	//check for '/'
 	if(file_data[pos] != '/')
-		throw CustomException("Error: expected '/' after 'location'");
+		throw std::runtime_error("Error: expected '/' after 'location'");
 	
 	//get path
 	size_t temp = file_data.find_first_of(" \t{", pos);
@@ -243,7 +243,7 @@ void	Location::parse_location_main(size_t &pos, string file_data)
 
 	//check for '{'
 	if(file_data[pos] != '{')
-		throw CustomException("Error: can't find open bracket '{' after location");
+		throw std::runtime_error("Error: can't find open bracket '{' after location");
 	pos++;
 
 	//while loop
@@ -265,11 +265,11 @@ void	Location::parse_location_main(size_t &pos, string file_data)
 		else if (file_data[pos] == '}')
 			break;
 		else
-			throw CustomException("Error: unknown directerive inside location block");
+			throw std::runtime_error("Error: unknown directerive inside location block");
 	}
 	
 	//check for '}'
 	if(file_data[pos] != '}')
-		throw CustomException("Error: location block need close bracket '{");
+		throw std::runtime_error("Error: location block need close bracket '{");
 	pos++;
 }

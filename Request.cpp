@@ -1,5 +1,11 @@
 #include "Request.hpp"
 
+static int my_atoi(std::string s) {
+	int i;
+	std::istringstream(s) >> i;
+	return i;
+}
+
 Request::Request() {}
 
 Request::~Request() {}
@@ -123,12 +129,12 @@ void Request::parse_body(size_t &pos, int socket_fd)
 	(void)pos;
 	if(content_length.length() == 0)
 		return ;
-	unsigned long long contentlen = std::stoll(content_length);
+	unsigned long long contentlen = my_atoi(content_length);
 	//cout << "\n\n__________________________________" << endl;
 	//cout << "CONTENTLENGTH: " << contentlen << endl;
 
-    if (fcntl(socket_fd, F_GETFL, 0) < 0)
-        throw CustomException("Error: failed to set non-blocking mode");
+	if (fcntl(socket_fd, F_GETFL, 0) < 0)
+		throw std::runtime_error("Error: failed to set non-blocking mode");
 
 	//first read
 	char buffer1[contentlen + 1];

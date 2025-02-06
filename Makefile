@@ -1,5 +1,5 @@
 SRCS = \
-Config.cpp CustomException.cpp main.cpp HTTP.cpp Server.cpp Socket.cpp \
+Config.cpp main.cpp HTTP.cpp Server.cpp Socket.cpp \
 Request.cpp Location.cpp Response.cpp Cgi.cpp
 
 OBJS = $(SRCS:.cpp=.o)

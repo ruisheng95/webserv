@@ -4,6 +4,15 @@ Cgi::Cgi() {}
 
 Cgi::~Cgi() {}
 
+static std::string replaceAll(std::string str, const std::string& from, const std::string& to) {
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+    }
+    return str;
+}
+
 char	**Cgi::config_env(Request &request)
 {
 	char **env = (char **)malloc(sizeof(char *) * request.get_header_fields().size() * 5);
@@ -16,7 +25,9 @@ char	**Cgi::config_env(Request &request)
 	for(std::map<string, string>::iterator it = request.get_header_fields().begin(); it != request.get_header_fields().end(); it++)
 	{
 		string field = it->first;
-		std::replace(field.begin(), field.end(), '-', '_');
+		// Not available in c++98
+		// std::replace(field.begin(), field.end(), '-', '_');
+		replaceAll(field, "-", "_");
 		for(size_t i = 0; i < field.size(); i++)
 			field[i] = std::toupper(field[i]);
 		env[j++] = strdup((field + "=" + it->second).c_str());

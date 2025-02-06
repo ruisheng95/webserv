@@ -40,7 +40,7 @@ void	HTTP::_run_webserv(char **argv)
 		if(poll_status == 0)
 			continue;
 		else if (poll_status < 0)
-			throw CustomException("Error: poll error");
+			throw std::runtime_error("Error: poll error");
 		else
 			sock.process_req(sockets, Servers);
 	}

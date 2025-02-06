@@ -34,29 +34,32 @@ int	Socket::setup_socket(string host, string port, struct addrinfo *reso)
 
 	//getaddrinfo
 	if(getaddrinfo(host.c_str(), port.c_str(), &hints, &reso) < 0)
-		throw CustomException("Error: getaddrinfo failed");
+		throw std::runtime_error("Error: getaddrinfo failed");
 
 	//create socket
 	if((sockfd = socket(reso->ai_family, reso->ai_socktype, reso->ai_protocol)) < 0)
-		throw CustomException("Error: Socket creation failed");
+		throw std::runtime_error("Error: Socket creation failed");
 
 	//set socket options (so we can bind without time delay after socket is closed)
 	int opt = 1;
 	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
-		throw CustomException("Setsockopt failure: " + std::string(strerror(errno)));
+	{
+		close(sockfd);
+		throw std::runtime_error("Setsockopt failure: " + std::string(strerror(errno)));
+	}	
 	
 	//bind socket
 	if(bind(sockfd, reso->ai_addr, reso->ai_addrlen) < 0)
 	{
 		close(sockfd);
-		throw CustomException("Error: Bind socket failed");
+		throw std::runtime_error("Error: Bind socket failed");
 	}
 
 	//mark socket as listening socket
 	if(listen(sockfd, LISTEN_BACKLOG) < 0) //listen backlog is the total maximum total amm of incoming connections we can have
 	{
 		close(sockfd);
-		throw CustomException("Error: Listen socket failed");
+		throw std::runtime_error("Error: Listen socket failed");
 	}
 	
 	//final stuffs
@@ -103,7 +106,7 @@ int	Socket::get_io_connection(int fd)
 		if(io_connections[i].sock_fd == fd)
 			return i;
 	}
-	throw CustomException("Error: cannot find io connection");
+	throw std::runtime_error("Error: cannot find io connection");
 	return -1;
 }
 
@@ -160,14 +163,14 @@ void	Socket::update_fd_event(int fd, int ev)
 void	Socket::receive_data(Socket &socket)
 {
 	char buffer[900000] = {0}; //HARDCODE AH
-	size_t bytes_received = recv(socket.sock_fd, buffer, sizeof(buffer) - 1, 0);
+	ssize_t bytes_received = recv(socket.sock_fd, buffer, sizeof(buffer) - 1, 0);
 	if(bytes_received > 0) //reminds me of gnl exam haih so gay
 	{
 		buffer[bytes_received] = '\0';
 		//cout << "Received from client (FD " << socket.sock_fd << " ) : " << buffer << endl;
 	}
 	else if(bytes_received < 0)
-		throw CustomException("Error: recv failed");
+		throw std::runtime_error("Error: recv failed");
 	socket.get_req().set_data(socket.get_req().get_data().append(buffer, bytes_received));
 	socket.get_req().parse_request_data_main(socket.sock_fd);
 	//print_request(socket.get_req());
@@ -196,9 +199,9 @@ void	Socket::process_req(vector<pair<int, struct addrinfo> > &sockets_addrinfo, 
 					}
 				}
 				if(res == NULL)
-					throw CustomException("Error: can't find socket addinfo");
+					throw std::runtime_error("Error: can't find socket addinfo");
 				if((accept_socket_fd = accept(poll_socket_fds[i].fd,  (struct sockaddr*) &res->ai_addr, &res->ai_addrlen)) <= 0)
-					throw CustomException("Error: accept socket failed");
+					throw std::runtime_error("Error: accept socket failed");
 				
 				//add accept socket to our new connection
 				connection_socket.set_sock_fd(accept_socket_fd);
@@ -219,7 +222,7 @@ void	Socket::process_req(vector<pair<int, struct addrinfo> > &sockets_addrinfo, 
 			int connect_index = get_io_connection(poll_socket_fds[i].fd);
 			Socket socket = io_connections[connect_index];
 			if(socket.get_req().get_req_data().length() <= 0)
-				throw CustomException("Error: no request found");
+				throw std::runtime_error("Error: no request found");
 			this->response.main_response_function(socket.get_req(), Servers);
 			//cout << "+++++++++++++++++++++\n" << this->response.get_response_data() << "\n++++++++++++++++++++++++++++++" << endl;
 			send(socket.sock_fd, this->response.get_response_data().c_str(), this->response.get_response_data().size(), 0);

@@ -13,6 +13,10 @@
 #include <dirent.h>
 #include <sys/stat.h> // for last modified file date in autoindex
 #include <cctype>
+#include <cstdlib>
+#include <sys/wait.h>
+#include <algorithm>
+#include <sstream>
 
 //for socket structs and functions
 #include <netdb.h> 
@@ -21,7 +25,6 @@
 
 //class headers
 #include "Request.hpp"
-#include "CustomException.hpp"
 #include "Config.hpp"
 #include "Server.hpp"
 #include "HTTP.hpp"

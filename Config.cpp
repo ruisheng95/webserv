@@ -7,14 +7,15 @@ Config::Config(string path) : file_path(path), file_data("")
 void Config::readfile() 
 {
     string buffer;
-    std::fstream infile(this->file_path);
+    std::fstream infile(this->file_path.c_str());
     if (!infile.is_open())
-        throw CustomException("Error: can't open config file");
+        throw std::invalid_argument("Error: can't open config file");
     else 
     {
         while (std::getline(infile, buffer))
             file_data += buffer + "\n";
-        file_data.pop_back();
+        // file_data.pop_back(); Not available in C++ 98
+		file_data.erase(file_data.size()-1);
     }
 	infile.close();
     //cout << file_data << endl;
@@ -37,7 +38,7 @@ void Config::main_parse_function(std::vector<Server> &server_list)
     {
         skip_whitespaces(pos);
         if (this->file_data.substr(pos, 6) != "server")
-            throw CustomException("Error: server block locating error");
+            throw std::invalid_argument("Error: server block locating error");
         else 
         {
             pos += 6;
@@ -45,8 +46,8 @@ void Config::main_parse_function(std::vector<Server> &server_list)
 			skip_whitespaces(pos);
         }
     }
-	if(server_list.empty())
-		throw CustomException("Error: need a server block inside config file");
+	if (server_list.empty())
+		throw std::invalid_argument("Error: need a server block inside config file");
 }
 
 void Config::parse_listen_part(size_t &pos, Server &newServer) 
@@ -54,14 +55,14 @@ void Config::parse_listen_part(size_t &pos, Server &newServer)
     //skip and check trailing spaces
     pos += 6;
     if (this->file_data[pos] != ' ')
-        throw CustomException("Error: must have at least one space after 'listen'");
+        throw std::invalid_argument("Error: must have at least one space after 'listen'");
     else
         skip_whitespaces(pos);
     
     //find the end of the listen string and create a substr of the numbers
     size_t host_port_delim = file_data.find_first_of(';', pos);
-	if(host_port_delim == file_data.length())
-		throw CustomException("Error: listen must at least contain smth");
+	if (host_port_delim == file_data.length())
+		throw std::invalid_argument("Error: listen must at least contain smth");
 	string host_port_numbers = file_data.substr(pos, host_port_delim - pos);
 
 	//extract host
@@ -72,8 +73,8 @@ void Config::parse_listen_part(size_t &pos, Server &newServer)
 		newServer.set_host(file_data.substr(pos, host_delim - pos));
 	
 	//extract port
-	if(pos == host_port_delim)
-		throw CustomException("Error: listen needs a port value as well");
+	if (pos == host_port_delim)
+		throw std::invalid_argument("Error: listen needs a port value as well");
 	pos = host_delim + 1;
 	newServer.set_port(file_data.substr(pos, host_port_delim - pos));
 
@@ -88,15 +89,15 @@ void Config::parse_server_name_part(size_t &pos, Server &newServer)
 {
 	//skip and check trailing spaces
     pos += 11;
-    if (this->file_data[pos] != ' ')
-        throw CustomException("Error: must have at least one space after 'server_name'");
-    else
-        skip_whitespaces(pos);
+	if (this->file_data[pos] != ' ')
+		throw std::invalid_argument("Error: must have at least one space after 'server_name'");
+	else
+		skip_whitespaces(pos);
 
 	//idk wat to do wif this lol aiya just substr the part first la
 	size_t server_name_delim = file_data.find_first_of(';', pos);
 	if(server_name_delim == pos)
-		throw CustomException("Error: server name part must at least contain smth");
+		throw std::invalid_argument("Error: server name part must at least contain smth");
 	string server_name_part = file_data.substr(pos, server_name_delim - pos);
 
 	//set server name
@@ -111,14 +112,15 @@ void Config::parse_client_body_size(size_t &pos, Server &newServer)
 	//skip and check trailing spaces
     pos += 20;
     if (this->file_data[pos] != ' ')
-        throw CustomException("Error: must have at least one space after 'server_name'");
-    else
-        skip_whitespaces(pos);
+        throw std::invalid_argument("Error: must have at least one space after 'server_name'");
+    else {
+		skip_whitespaces(pos);
+	}
 
 	//idk wat to do wif this lol aiya just substr the part first la
 	size_t client_body_size_delim = file_data.find_first_of(';', pos);
 	if(client_body_size_delim == pos)
-		throw CustomException("Error: client_max_body_size part must at least contain smth");
+		throw std::invalid_argument("Error: client_max_body_size part must at least contain smth");
 	string client_body_size_part = file_data.substr(pos, client_body_size_delim - pos);
 
 	//set client body size
@@ -135,18 +137,19 @@ void Config::parse_error_pages(size_t &pos, Server &newServer)
 
 	//check space
     if (this->file_data[pos] != ' ')
-        throw CustomException("Error: must have at least one space after 'error pages'");
-    else
-        skip_whitespaces(pos);
+        throw std::invalid_argument("Error: must have at least one space after 'error pages'");
+    else {
+		skip_whitespaces(pos);
+	}
 	
 	//extract the info part
 	size_t error_pages_delim = file_data.find_first_of(';', pos);
 	if(error_pages_delim == pos)
-		throw CustomException("Error: error_pages part must at least contain smth");
+		throw std::invalid_argument("Error: error_pages part must at least contain smth");
 	string error_pages_part = file_data.substr(pos, error_pages_delim - pos);
 	size_t slash_pos = error_pages_part.find_first_of('/', 0);
 	if(slash_pos == std::string::npos)
-		throw CustomException("Error: cant find / in error pages part");
+		throw std::invalid_argument("Error: cant find / in error pages part");
 	
 	//extract the parts
 	string page_path = error_pages_part.substr(slash_pos, error_pages_part.length() - slash_pos);
@@ -174,8 +177,8 @@ void Config::parse_socket_addr(Server &newServer)
 
 	pair<string, string> sock_host_port_pair = std::make_pair(host, port);
 	vector<pair<string, string> >::iterator it = std::find(newServer.socket_addr.begin(), newServer.socket_addr.end(), sock_host_port_pair);
-	if(it != newServer.socket_addr.end())
-		throw CustomException("Error: duplicate socket host-port address detected");
+	if (it != newServer.socket_addr.end())
+		throw std::invalid_argument("Error: duplicate socket host-port address detected");
 	newServer.socket_addr.push_back(sock_host_port_pair);
 }
 
@@ -185,14 +188,14 @@ void Config::parse_server_block(size_t &pos, std::vector<Server> &server_list)
 
 	skip_whitespaces(pos);
 	if (this->file_data[pos] != '{')
-		throw CustomException("Error: Server block doesnt have open brackets");
-    else
-        pos++;
+		throw std::invalid_argument("Error: Server block doesnt have open brackets");
+	else
+		pos++;
     while (this->file_data[pos] && this->file_data[pos] != '}') 
     {
-        skip_whitespaces(pos);
-        if (this->file_data.substr(pos, 6) == "listen")
-            parse_listen_part(pos, newServer);
+		skip_whitespaces(pos);
+		if (this->file_data.substr(pos, 6) == "listen")
+			parse_listen_part(pos, newServer);
 		else if (this->file_data.substr(pos, 11) == "server_name")
 			parse_server_name_part(pos, newServer);
 		else if (this->file_data.substr(pos, 20) == "client_max_body_size")
@@ -208,10 +211,10 @@ void Config::parse_server_block(size_t &pos, std::vector<Server> &server_list)
 		else if(this->file_data[pos] == '}') //need this incase we encounter '}' after skip_whitespace
 			break;
 		else
-			throw CustomException("Error: unrecognise directive inside server block");
+			throw std::invalid_argument("Error: unrecognise directive inside server block");
     }
-	if(this->file_data[pos] != '}')
-		throw CustomException("Error: server block need close brackets");
+	if (this->file_data[pos] != '}')
+		throw std::invalid_argument("Error: server block need close brackets");
 		
 	//skip the closing bracket '}'
 	pos++;

@@ -1,5 +1,27 @@
 #include "Response.hpp"
 
+static int my_atoi(std::string s) {
+	int i;
+	std::istringstream(s) >> i;
+	return i;
+}
+
+static std::string my_itoa(size_t i) {
+	std::string s;
+	std::stringstream out;
+	out << i;
+	s = out.str();
+	return s;
+}
+
+static int my_hex_to_int(std::string s) {
+	int i;
+	std::stringstream ss;
+	ss << std::hex << s;
+	ss >> i;
+	return i;
+}
+
 Response::Response() {}
 
 Response::~Response() {}
@@ -56,7 +78,9 @@ string Response::urlDecode(string &str)
 		if(str[i] == '%' && i < str.size() - 2)
 		{
 			string temp_hex_str = str.substr(i + 1, 2);
-			int hex_value = stoi(temp_hex_str, nullptr, 16); //stoi i love u sm idh to manually putnbr base
+			// Not available on c++98
+			// int hex_value = stoi(temp_hex_str, nullptr, 16); //stoi i love u sm idh to manually putnbr base
+			int hex_value = my_hex_to_int(temp_hex_str);
 			res += static_cast<char>(hex_value);
 			i += 2;
 		}
@@ -75,7 +99,7 @@ Server	&Response::find_server(Request request, vector<Server>& Servers)
 		if(request.get_port() == Servers[i].get_port())
 			return Servers[i];
 	}
-	throw CustomException("Error: cannot find respective server");
+	throw std::runtime_error("Error: cannot find respective server");
 }
 
 Location *Response::get_location(Request request, Server &server)
@@ -121,9 +145,9 @@ string	Response::get_error_page(string error_code, Server &server)
 		if(it->first == error_code)
 		{
 			string filepath = "." + it->second;
-			std::ifstream infile(filepath);
+			std::ifstream infile(filepath.c_str());
 			if(!infile.is_open())
-				throw CustomException("Error: cannot open error file");
+				throw std::runtime_error("Error: cannot open error file");
 			while(getline(infile, buffer))
 				error_page_contents.append(buffer);
 		}
@@ -133,7 +157,7 @@ string	Response::get_error_page(string error_code, Server &server)
 
 string	Response::get_headers(string content, string content_type)
 {
-	string res = "Content-Type: " + content_type + "\r\nContent-Length: " + std::to_string(content.size()) + "\r\nConnection: keep-alive\r\n\r\n";
+	string res = "Content-Type: " + content_type + "\r\nContent-Length: " + my_itoa(content.size()) + "\r\nConnection: keep-alive\r\n\r\n";
 	return res;
 }
 
@@ -159,7 +183,7 @@ void	Response::handle_return(Request request, Server &server, Location &location
 	{
 		temp = return_.find_first_of(" \t");
 		if(temp == std::string::npos)
-			throw CustomException("Error: invalid return part");
+			throw std::runtime_error("Error: invalid return part");
 		status_code = return_.substr(pos, temp - pos);
 		pos = temp + 1;
 	}
@@ -220,7 +244,7 @@ string	Response::get_file_size(size_t filesize)
 		num = filesize;
 		unit = "B";
 	}
-	res = std::to_string(num) + unit;
+	res = my_itoa(num) + unit;
 	return res;
 }
 
@@ -284,7 +308,7 @@ void	Response::handle_autoindex(Request request, Server &server, Location &locat
 					char		buffer[100];
 					memset(buffer, 0, sizeof(buffer));
 					if(stat(path_and_name.c_str(), &file_info) != 0) //gets file stats
-						throw CustomException("Error : (autoindex) cant get file stat");
+						throw std::runtime_error("Error : (autoindex) cant get file stat");
 					tm_info = localtime(&file_info.st_mtime); // converts the time stat to a time struct (the original value is time in seconds, need to conver that into struct wif like year-month-day or smth)
 					strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_info); //converts the time struct into a string
 					response_body += "<div class = 'lm'>";
@@ -320,7 +344,7 @@ string	Response::parse_resources(string path)
 {
 	string res;
 	string buffer;
-	std::ifstream infile(path);
+	std::ifstream infile(path.c_str());
 	if(!infile.is_open())
 		return "";
 	while(getline(infile, buffer))
@@ -357,14 +381,14 @@ string	Response::get_file_type(string path)
 		return "text/css";
 	else if (type == "js")
         return "text/javascript";
-    else if (type == "jpeg" || type == "jpg")
-        return "image/jpeg";
-    else if (type == "png")
-        return "image/png";
-    else if (type == "gif")
-        return "image/gif";
-    else if (type == "txt")
-        return "text/plain";
+	else if (type == "jpeg" || type == "jpg")
+		return "image/jpeg";
+	else if (type == "png")
+		return "image/png";
+	else if (type == "gif")
+		return "image/gif";
+	else if (type == "txt")
+		return "text/plain";
 	else
 		return "text/plain";
 }
@@ -431,7 +455,7 @@ void	Response::handle_post(Request request, Server &server)
 	else if(location->get_cgi_pass() == "")
 		handle_error(request, "404", server);
 	else if(request.get_content_length() != "" && server.get_client_max_body_size() != ""
-			&& std::stoull(request.get_content_length()) > std::stoull(server.get_client_max_body_size()))
+			&& my_atoi(request.get_content_length()) > my_atoi(server.get_client_max_body_size()))
 		handle_error(request, "413", server);
 	else if(check_request_body_valid(request) == 0)
 		handle_error(request, "422", server);
