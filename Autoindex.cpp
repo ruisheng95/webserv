@@ -140,7 +140,7 @@ void	Autoindex::generate_autoindex_page_second_part(string &response_body, DIR *
 			//finally, cleanup and close everything
 			if(checkdir)
 				closedir(checkdir);
-			response_body += "</div>"; // close row div
+			response_body += "</div>"; // close row div  
 		}
 	}
 	//closing html codes
