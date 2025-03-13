@@ -1,15 +1,8 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include "webserv.hpp"
-#include "Server.hpp"
-
-using std::string;
-using std::cout;
-using std::endl;
-using std::vector;
-using std::pair;
-
+#include <string>
+#include <vector>
 class Server;
 
 class Config

@@ -1,14 +1,30 @@
 #include "Socket.hpp"
+#include "Server.hpp"
+#include "webserv.hpp"
+#include <cstring>
 #include <netdb.h>
+#include <stdexcept>
+#include <string>
+#include <sys/poll.h>
+#include <unistd.h>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <errno.h>
+using std::vector;
+using std::string;
+using std::pair;
+using std::cout;
+using std::endl;
 
 Socket::Socket() {}
 
 Socket::~Socket() {}
 
 // Define static member variables
-std::vector<Socket> Socket::io_connections;
-std::vector<struct pollfd> Socket::poll_socket_fds;
-std::vector<int> Socket::listen_socket_fds;
+vector<Socket> Socket::io_connections;
+vector<struct pollfd> Socket::poll_socket_fds;
+vector<int> Socket::listen_socket_fds;
 
 Request &Socket::get_req()
 {
@@ -25,7 +41,7 @@ void	Socket::set_sock_fd(int sockfd)
 ////////////////////////////////////////socket setup////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void Socket::main_setup_socket(vector<std::pair<int, struct addrinfo> > &all_sockets_list)
+void Socket::main_setup_socket(vector<pair<int, struct addrinfo> > &all_sockets_list)
 {
 	for(vector<pair<string, string> >::iterator it = Server::socket_addr.begin(); it != Server::socket_addr.end(); it++)
 	{
@@ -64,7 +80,7 @@ int	Socket::setup_socket(string host, string port, struct addrinfo **reso)
 	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
 	{
 		close(sockfd);
-		throw std::runtime_error("Setsockopt failure: " + std::string(strerror(errno)));
+		throw std::runtime_error("Setsockopt failure: " + string(strerror(errno)));
 	}	
 	
 	//bind socket
@@ -118,7 +134,7 @@ void	Socket::receive_data(Socket &socket)
 	//print_request(socket.get_req());
 }
 
-void	Socket::process_req_POLLIN_listen_socket(int i ,vector<std::pair<int, struct addrinfo> > &sockets_addrinfo)//process listening socket
+void	Socket::process_req_POLLIN_listen_socket(int i ,vector<pair<int, struct addrinfo> > &sockets_addrinfo)//process listening socket
 {
 	struct addrinfo *res = NULL;
 	Socket connection_socket;

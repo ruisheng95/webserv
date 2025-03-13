@@ -3,13 +3,13 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <fstream>
-# include <stdexcept>
 # include <map>
 
 using std::string;
 using std::cin;
 using std::cout;
 using std::endl;
+using std::map;
 
 string parse_resources(string path)
 {
@@ -26,7 +26,7 @@ string parse_resources(string path)
 string	get_file_type(string path)
 {
 	size_t dotpos = path.find_first_of(".", 1);
-	if(dotpos == std::string::npos)
+	if(dotpos == string::npos)
 		return("plain/text");
 	string type = path.substr(dotpos + 1, path.length() - dotpos - 1);
 
@@ -92,7 +92,7 @@ int main(int argc, char **argv, char **envp)
 	//cout << "boundary: " << boundary << endl;
 
 	//header fields
-	std::map<string,string> header_fields;
+	map<string,string> header_fields;
 	while(pos < total_body.length() && total_body[pos] != '\r')
 	{
 		size_t colon_pos = total_body.find_first_of(":" , pos);
@@ -106,11 +106,11 @@ int main(int argc, char **argv, char **envp)
 	}
 
 	string field_stuff;
-	for (std::map<std::string, std::string>::iterator it = header_fields.begin(); it != header_fields.end(); ++it)
+	for (map<string, string>::iterator it = header_fields.begin(); it != header_fields.end(); ++it)
        field_stuff += it->first + ":" + it->second + "\n";
 
 	//get filename
-	std::map<string, string>::iterator it = header_fields.find("Content-Disposition");
+	map<string, string>::iterator it = header_fields.find("Content-Disposition");
 	string value = it->second;
 	string print2 = "value: " + value;
 	size_t filename_pos = value.find("filename");
@@ -147,12 +147,12 @@ int main(int argc, char **argv, char **envp)
 
 
 	// Output HTTP headers
-    std::cout << "HTTP/1.1 200 OK\r\n";                   // HTTP version and status code
-    std::cout << "Content-Type: text/html\r\n";          // Content type of the response
-    std::cout << "Connection: keep-alive\r\n";                // Close connection after response
-    std::cout << "Content-Length: " << msg.length() << "\r\n"; // Length of the response body (update as needed)
-    std::cout << "\r\n";                            // End of headers
-	std::cout << msg << endl;
+    cout << "HTTP/1.1 200 OK\r\n";                   // HTTP version and status code
+    cout << "Content-Type: text/html\r\n";          // Content type of the response
+    cout << "Connection: keep-alive\r\n";                // Close connection after response
+    cout << "Content-Length: " << msg.length() << "\r\n"; // Length of the response body (update as needed)
+    cout << "\r\n";                            // End of headers
+	cout << msg << endl;
 
 	return 0;
 }

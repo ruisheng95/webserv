@@ -1,4 +1,15 @@
 #include "Request.hpp"
+#include "Socket.hpp"
+#include <fcntl.h>
+#include <string>
+#include <sstream>
+#include <sys/socket.h>
+#include <iostream>
+using std::string;
+using std::map;
+using std::pair;
+using std::cout;
+using std::endl;
 
 static int my_atoi(std::string s) {
 	int i;
@@ -47,7 +58,7 @@ string	Request::get_content_length()
 	return this->content_length;
 }
 
-std::map<string, string>	&Request::get_header_fields()
+map<string, string>	&Request::get_header_fields()
 {
 	return this->header_fields;
 }
@@ -98,7 +109,7 @@ void Request::parse_host_port(string str)
 void Request::parse_header_fields(size_t &pos)
 {
 	size_t temp;
-	std::pair <string, string> pair;
+	pair <string, string> pair;
 	while(pos < req_data.length() && req_data[pos] != '\r') // second condition is to check for last line
 	{
 		temp = req_data.find_first_of(":" , pos);
@@ -172,26 +183,26 @@ void Request::parse_request_data_main(int socket_fd)
 
 void	print_request(Request request)
 {
-	std::cout << "REQUEST ATTRIBUTES" << std::endl;
-	std::cout << "==================" << std::endl;
-	std::cout << "method: " << request.get_method() << std::endl;
-	std::cout << "route: " << request.get_target() << std::endl;
-	std::cout << "http_protocol: " << request.get_http_ver() << std::endl;
-	std::cout << "host: " << request.get_host() << std::endl;
-	std::cout << "port: " << request.get_port() << std::endl;
-	std::cout << "content_length: " << request.get_content_length() << std::endl;
-	std::map<std::string, std::string> header_fields = request.get_header_fields();
-	std::map<std::string, std::string>::iterator it = header_fields.begin();
-	std::map<std::string, std::string>::iterator ite = header_fields.end();
-	std::cout << std::endl;
-	std::cout << "Header fields" << std::endl;
-	std::cout << "-------------" << std::endl;
+	cout << "REQUEST ATTRIBUTES" << endl;
+	cout << "==================" << endl;
+	cout << "method: " << request.get_method() << endl;
+	cout << "route: " << request.get_target() << endl;
+	cout << "http_protocol: " << request.get_http_ver() << endl;
+	cout << "host: " << request.get_host() << endl;
+	cout << "port: " << request.get_port() << endl;
+	cout << "content_length: " << request.get_content_length() << endl;
+	map<string, string> header_fields = request.get_header_fields();
+	map<string, string>::iterator it = header_fields.begin();
+	map<string, string>::iterator ite = header_fields.end();
+	cout << endl;
+	cout << "Header fields" << endl;
+	cout << "-------------" << endl;
 	for (; it != ite; it++)
 	{
-		std::cout << it->first << ":" << it->second << std::endl;
+		cout << it->first << ":" << it->second << endl;
 	}
-	std::cout << "-------------" << std::endl;
-	std::cout << "Message Body" << std::endl;
-	std::cout << request.get_body() << std::endl;
-	std::cout << "==================" << std::endl;
+	cout << "-------------" << endl;
+	cout << "Message Body" << endl;
+	cout << request.get_body() << endl;
+	cout << "==================" << endl;
 }

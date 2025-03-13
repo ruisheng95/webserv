@@ -1,4 +1,18 @@
-#include "Response.hpp"
+#include "Autoindex.hpp"
+#include "Socket.hpp"
+#include "Server.hpp"
+#include "Location.hpp"
+#include "Cgi.hpp"
+#include <dirent.h>
+#include <fcntl.h>
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <vector>
+#include <fstream>
+using std::vector;
+using std::string;
+using std::map;
 
 static std::string my_itoa(size_t i){
 	std::string s;
@@ -77,7 +91,7 @@ string	Response::get_error_page(string error_code, Server &server)
 {
 	string error_page_contents;
 	string buffer;
-	for(std::map<string, string>::iterator it = server.get_error_pages().begin(); it != server.get_error_pages().end(); it++)
+	for(map<string, string>::iterator it = server.get_error_pages().begin(); it != server.get_error_pages().end(); it++)
 	{
 		if(it->first == error_code)
 		{
@@ -181,7 +195,7 @@ string	Response::parse_resources(string path)
 string	Response::get_file_type(string path)
 {
 	size_t dotpos = path.find_first_of(".", 1);
-	if(dotpos == std::string::npos)
+	if(dotpos == string::npos)
 		return("plain/text");
 	string type = path.substr(dotpos + 1, path.length() - dotpos - 1);
 
@@ -391,7 +405,7 @@ void	Response::handle_return(Request request, Server &server, Location &location
 	if(std::isdigit(return_[pos]))
 	{
 		temp = return_.find_first_of(" \t");
-		if(temp == std::string::npos)
+		if(temp == string::npos)
 			throw std::runtime_error("Error: invalid return part");
 		status_code = return_.substr(pos, temp - pos);
 		pos = temp + 1;

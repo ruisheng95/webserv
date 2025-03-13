@@ -1,4 +1,13 @@
 #include "Config.hpp"
+#include "Location.hpp"
+#include "Server.hpp"
+#include <stdexcept>
+#include <fstream>
+#include <algorithm>
+
+using std::string;
+using std::vector;
+using std::pair;
 
 Config::Config(string path) : file_path(path), file_data("") 
 {
@@ -30,7 +39,7 @@ void Config::skip_whitespaces(size_t &pos)
         pos++;
 }
 
-void Config::main_parse_function(std::vector<Server> &server_list) 
+void Config::main_parse_function(vector<Server> &server_list) 
 {
     size_t pos = 0;
     readfile();
@@ -148,7 +157,7 @@ void Config::parse_error_pages(size_t &pos, Server &newServer)
 		throw std::invalid_argument("Error: error_pages part must at least contain smth");
 	string error_pages_part = file_data.substr(pos, error_pages_delim - pos);
 	size_t slash_pos = error_pages_part.find_first_of('/', 0);
-	if(slash_pos == std::string::npos)
+	if(slash_pos == string::npos)
 		throw std::invalid_argument("Error: cant find / in error pages part");
 	
 	//extract the parts
@@ -158,7 +167,7 @@ void Config::parse_error_pages(size_t &pos, Server &newServer)
 	//extract each code and assign the value error page address
 	size_t space_pos;
 	int i = 0;
-	while((space_pos = error_pages_part.find_first_of(" ", i)) != std::string::npos)
+	while((space_pos = error_pages_part.find_first_of(" ", i)) != string::npos)
 	{
 		string Err_code = error_pages_part.substr(i, space_pos - i);
 		newServer.get_error_pages().insert(std::make_pair(Err_code, page_path));
@@ -182,7 +191,7 @@ void Config::parse_socket_addr(Server &newServer)
 	newServer.socket_addr.push_back(sock_host_port_pair);
 }
 
-void Config::parse_server_block(size_t &pos, std::vector<Server> &server_list) 
+void Config::parse_server_block(size_t &pos, vector<Server> &server_list) 
 {
     Server newServer;
 

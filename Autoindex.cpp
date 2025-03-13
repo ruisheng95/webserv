@@ -1,5 +1,9 @@
 #include "Autoindex.hpp"
-#include "webserv.hpp"
+#include <cstring>
+#include <sys/stat.h>
+#include <sstream>
+
+using std::string;
 
 static std::string my_itoa(size_t i)
 {

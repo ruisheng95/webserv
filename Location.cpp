@@ -1,4 +1,11 @@
 #include "Location.hpp"
+#include <iostream>
+#include <algorithm>
+
+using std::string;
+using std::vector;
+using std::cout;
+using std::endl;
 
 Location::Location() {}
 
@@ -76,7 +83,7 @@ void	Location::parse_allowed_methods(size_t &pos, string file_data)
 
 	//find ';'
 	size_t temp = file_data.find_first_of(";" , pos);
-	if(temp == std::string::npos)
+	if(temp == string::npos)
 		throw std::runtime_error("Error: can't find ';' in allowed methods");
 	
 	//extract methods
@@ -108,7 +115,7 @@ void	Location::parse_root(size_t &pos, string file_data)
 
 	//find ';'
 	size_t temp = file_data.find_first_of(";" , pos);
-	if(temp == std::string::npos)
+	if(temp == string::npos)
 		throw std::runtime_error("Error: can't find ';' in root");
 	string path = file_data.substr(pos, temp - pos);
 
@@ -132,7 +139,7 @@ void	Location::parse_index(size_t &pos, string file_data)
 
 	//find ';'
 	size_t temp = file_data.find_first_of(";" , pos);
-	if(temp == std::string::npos)
+	if(temp == string::npos)
 		throw std::runtime_error("Error: can't find ';' in index");
 
 	//extract index pages
@@ -163,7 +170,7 @@ void	Location::parse_cgi_pass(size_t &pos, string file_data)
 
 	//find ';'
 	size_t temp = file_data.find_first_of(";" , pos);
-	if(temp == std::string::npos)
+	if(temp == string::npos)
 		throw std::runtime_error("Error: can't find ';' in cgi_pass");
 	string path = file_data.substr(pos, temp - pos);
 
@@ -187,7 +194,7 @@ void	Location::parse_return(size_t &pos, string file_data)
 
 	//find ';'
 	size_t temp = file_data.find_first_of(";" , pos);
-	if(temp == std::string::npos)
+	if(temp == string::npos)
 		throw std::runtime_error("Error: can't find ';' in return");
 	string path = file_data.substr(pos, temp - pos);
 
@@ -208,7 +215,7 @@ void	Location::parse_autoindex(size_t &pos, string file_data)
 
 	//find ';'
 	size_t temp = file_data.find_first_of(";" , pos);
-	if(temp == std::string::npos)
+	if(temp == string::npos)
 		throw std::runtime_error("Error: can't find ';' in return");
 	string status = file_data.substr(pos, temp - pos);
 

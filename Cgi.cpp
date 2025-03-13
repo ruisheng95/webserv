@@ -1,4 +1,17 @@
 #include "Cgi.hpp"
+#include "Socket.hpp"
+#include "Location.hpp"
+#include <map>
+#include <cstring>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <iostream>
+#include <cstdlib>
+#include <cstdio>
+using std::string;
+using std::cout;
+using std::endl;
+using std::map;
 
 Cgi::Cgi() {}
 
@@ -22,7 +35,7 @@ char	**Cgi::config_env(Request &request)
 	env[2] = strdup((string("SERVER_PROTOCOL=") + request.get_http_ver()).c_str());
 	size_t j = 3;
 
-	for(std::map<string, string>::iterator it = request.get_header_fields().begin(); it != request.get_header_fields().end(); it++)
+	for(map<string, string>::iterator it = request.get_header_fields().begin(); it != request.get_header_fields().end(); it++)
 	{
 		string field = it->first;
 		// Not available in c++98

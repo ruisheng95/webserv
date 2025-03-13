@@ -1,15 +1,23 @@
 #include "HTTP.hpp"
+#include "Socket.hpp"
+#include "Config.hpp"
+#include <stdexcept>
+#include <sys/poll.h>
+
+using std::string;
+using std::vector;
+using std::pair;
 
 HTTP::HTTP() {}
 
 HTTP::~HTTP() {}
 
-std::vector<Server> &HTTP::get_servers()
+vector<Server> &HTTP::get_servers()
 {
 	return(this->Servers);
 }
 
-std::vector<pair<int, struct addrinfo> > &HTTP::get_all_sockets_list()
+vector<pair<int, struct addrinfo> > &HTTP::get_all_sockets_list()
 {
 	return(this->all_sockets_list);
 }

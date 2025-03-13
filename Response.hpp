@@ -1,10 +1,6 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
-#include "webserv.hpp"
-
-using std::string;
-
 // class Response //include this here first cuz somehow incomplete type
 // {
 // 	private:

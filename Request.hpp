@@ -1,13 +1,6 @@
 #ifndef REQUEST_HPP
 #define REQUEST_HPP
 
-
-#include "webserv.hpp"
-
-using std::string;
-using std::cout;
-using std::endl;
-
 class Request;
 
 // class Request

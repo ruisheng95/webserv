@@ -1,4 +1,7 @@
-#include "webserv.hpp"
+#include "Config.hpp"
+#include "HTTP.hpp"
+#include <stdexcept>
+#include <iostream>
 
 //damn i wish every file and code can be as short as this
 int main(int argc, char **argv)
@@ -13,6 +16,6 @@ int main(int argc, char **argv)
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << endl;
+		std::cerr << e.what() << std::endl;
 	}
 }
