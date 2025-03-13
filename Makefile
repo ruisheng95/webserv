@@ -1,6 +1,9 @@
 SRCS = \
 Config.cpp main.cpp HTTP.cpp Server.cpp Socket.cpp \
-Request.cpp Location.cpp Response.cpp Cgi.cpp
+Request.cpp Location.cpp Response.cpp Cgi.cpp Autoindex.cpp
+
+HEADERS = Config.hpp HTTP.hpp Server.hpp Socket.hpp \
+Request.hpp Location.hpp Response.hpp Cgi.hpp Autoindex.hpp webserv.hpp
 
 OBJS = $(SRCS:.cpp=.o)
 
@@ -10,7 +13,7 @@ CC = c++
 
 CFLAGS = -Wall -Wextra -Werror -std=c++98
 
-${NAME}: ${SRCS}
+${NAME}: ${SRCS} ${HEADERS} Makefile
 	${CC} ${CFLAGS} ${SRCS} -o ${NAME}
 
 all: ${NAME} run_cgi_makefile

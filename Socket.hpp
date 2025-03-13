@@ -60,25 +60,28 @@ class Response //include this here first cuz somehow incomplete type
 
 		void	main_response_function(Request request, vector<Server> &Servers);
 
-		void	generate_autoindex_page(Request request, Server &server, Location &location);
-		string	get_file_type(string path);
-		string	parse_resources(string path);
-		string	get_file_size(size_t filesize);
-		string	get_start_line(Request request, string code, Server &server);
-		string	get_full_resource_path(Request request, Location &location);
-		string	urlDecode(string &str);
-		string	get_code_string(string error_code);
-		string	get_error_page(string error_code, Server &server);
-		Location *get_location(Request request, Server &server);
-		int		check_allowed_methods(string method, Location &location);
-		string	get_headers(string content, string content_type);
+		void	do_indexing(Request request, Server &server, Location *location, string resource_path);
+		void	get_file_contents(Request request, Server &server, string resource_path);
+
 		void	handle_get(Request request, Server &server);
 		void	handle_post(Request request, Server &server);
 		void	handle_delete(Request request, Server &server);
 		void	handle_error(Request request, string error_code, Server &server);
 		void	handle_return(Request request, Server &server, Location &location);
 		void	handle_autoindex(Request request, Server &server, Location &location, string req_path);
+
+		string	get_error_page(string error_code, Server &server);
+		string	get_start_line(Request request, string code, Server &server);
+		string	get_file_type(string path);
+		string	parse_resources(string path);
+		string	get_full_resource_path(Request request, Location &location);
+		string	urlDecode(string &str);
+		string	get_code_string(string error_code);
+		Location *get_location(Request request, Server &server);
+		int		check_allowed_methods(string method, Location &location);
+		string	get_headers(string content, string content_type);
 		Server	&find_server(Request request, vector<Server> &Servers);
+		int		check_request_body_valid(Request &request);
 };
 
 class Socket
@@ -89,7 +92,6 @@ class Socket
 		Response response;
 
 	public:
-		int	setup_socket(string host, string port, struct addrinfo *reso);
 		Socket();
 		~Socket();
 
@@ -97,14 +99,25 @@ class Socket
 		static vector<int> listen_socket_fds;
 		static vector<Socket> io_connections;
 
-		void	add_new_socket_to_poll(int fd, int ev);
-		void	process_req(vector<std::pair<int, struct addrinfo> > &sockets_addrinfo, vector<Server>Servers);
+		//get
 		Request	&get_req();
+
+		//setup socket
+		void	main_setup_socket(vector<std::pair<int, struct addrinfo> > &all_sockets_list);
+		int	setup_socket(string host, string port, struct addrinfo *reso);
+
+		//request stuff
 		void	receive_data(Socket &socket);
+		void	process_req_POLLIN_connection_socket(int i);
+		void	process_req_POLLIN_listen_socket(int i, vector<std::pair<int, struct addrinfo> > &sockets_addrinfo);
+		void	process_req_POLLOUT(int i, vector<Server> Servers); //output stuff and close socket
+		void	process_req(vector<std::pair<int, struct addrinfo> > &sockets_addrinfo, vector<Server>Servers);
+
+		//utils
+		void	add_new_socket_to_poll(int fd, int ev);
 		void	update_fd_event(int fd, int ev);
 		void	set_sock_fd(int sockfd);
 		int		get_io_connection(int fd);
-		std::string generate_http_response(const std::string &file_path);
 		void	close_fd(int fd, int fd_index);
 };
 

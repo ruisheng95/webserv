@@ -32,6 +32,7 @@
 #include "Location.hpp"
 #include "Response.hpp"
 #include "Cgi.hpp"
+#include "Autoindex.hpp"
 
 using std::string;
 using std::cout;
