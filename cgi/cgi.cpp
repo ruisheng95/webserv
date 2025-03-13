@@ -36,14 +36,14 @@ string	get_file_type(string path)
 		return "text/css";
 	else if (type == "js")
         return "text/javascript";
-    else if (type == "jpeg" || type == "jpg")
-        return "image/jpeg";
-    else if (type == "png")
-        return "image/png";
-    else if (type == "gif")
-        return "image/gif";
-    else if (type == "txt")
-        return "text/plain";
+	else if (type == "jpeg" || type == "jpg")
+		return "image/jpeg";
+	else if (type == "png")
+		return "image/png";
+	else if (type == "gif")
+		return "image/gif";
+	else if (type == "txt")
+		return "text/plain";
 	else
 		return "text/plain";
 }

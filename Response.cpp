@@ -169,7 +169,7 @@ void	Response::handle_autoindex(Request request, Server &server, Location &locat
 
 			auto_index.generate_autoindex_page_first_part(response_body, dir_name); //generate the top part of the html page (styling, headers....)
 			auto_index.generate_autoindex_page_second_part(response_body, dir, path); //generate the body part (readdir and listing the filees)
-
+			closedir(dir);
 			this->response_data = get_start_line(request, "200", server) + get_headers(response_body, "text/html") + response_body;
 		}
 	}

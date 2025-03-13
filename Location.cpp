@@ -252,6 +252,7 @@ void	Location::parse_location_main(size_t &pos, string file_data)
 	if(file_data[pos] != '{')
 		throw std::runtime_error("Error: can't find open bracket '{' after location");
 	pos++;
+	autoindex = false;
 
 	//while loop
 	while(pos != file_data.length())
