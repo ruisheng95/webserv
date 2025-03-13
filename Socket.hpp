@@ -104,7 +104,7 @@ class Socket
 
 		//setup socket
 		void	main_setup_socket(vector<std::pair<int, struct addrinfo> > &all_sockets_list);
-		int	setup_socket(string host, string port, struct addrinfo *reso);
+		int	setup_socket(string host, string port, struct addrinfo **reso);
 
 		//request stuff
 		void	receive_data(Socket &socket);

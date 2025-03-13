@@ -1,4 +1,5 @@
 #include "Socket.hpp"
+#include <netdb.h>
 
 Socket::Socket() {}
 
@@ -29,14 +30,15 @@ void Socket::main_setup_socket(vector<std::pair<int, struct addrinfo> > &all_soc
 	for(vector<pair<string, string> >::iterator it = Server::socket_addr.begin(); it != Server::socket_addr.end(); it++)
 	{
 		int sockfd;
-		struct addrinfo reso;
+		struct addrinfo *reso = NULL;
 		sockfd = setup_socket(it->first, it->second, &reso); //binding and other socket programs
 		add_new_socket_to_poll(sockfd, POLLIN); //add new socket to poll monitor pool
-		all_sockets_list.push_back(std::make_pair(sockfd, reso)); //add new socket as well as all its information to the list
+		all_sockets_list.push_back(std::make_pair(sockfd, *reso)); //add new socket as well as all its information to the list
+		freeaddrinfo(reso);
 	}
 }
 
-int	Socket::setup_socket(string host, string port, struct addrinfo *reso)
+int	Socket::setup_socket(string host, string port, struct addrinfo **reso)
 {
 	int				sockfd;
 	struct addrinfo	hints; //for getaddrinfo later
@@ -50,11 +52,11 @@ int	Socket::setup_socket(string host, string port, struct addrinfo *reso)
 	hints.ai_flags = AI_NUMERICSERV;
 
 	//getaddrinfo
-	if(getaddrinfo(host.c_str(), port.c_str(), &hints, &reso) < 0)
+	if(getaddrinfo(host.c_str(), port.c_str(), &hints, reso) < 0)
 		throw std::runtime_error("Error: getaddrinfo failed");
 
 	//create socket
-	if((sockfd = socket(reso->ai_family, reso->ai_socktype, reso->ai_protocol)) < 0)
+	if((sockfd = socket((*reso)->ai_family, (*reso)->ai_socktype, (*reso)->ai_protocol)) < 0)
 		throw std::runtime_error("Error: Socket creation failed");
 
 	//set socket options (so we can bind without time delay after socket is closed)
@@ -66,7 +68,7 @@ int	Socket::setup_socket(string host, string port, struct addrinfo *reso)
 	}	
 	
 	//bind socket
-	if(bind(sockfd, reso->ai_addr, reso->ai_addrlen) < 0)
+	if(bind(sockfd, (*reso)->ai_addr, (*reso)->ai_addrlen) < 0)
 	{
 		close(sockfd);
 		throw std::runtime_error("Error: Bind socket failed");
@@ -186,7 +188,7 @@ void	Socket::process_req(vector<pair<int, struct addrinfo> > &sockets_addrinfo, 
 void	Socket::add_new_socket_to_poll(int fd, int ev)
 {
 	struct pollfd newfd;
-
+	memset(&newfd, 0, sizeof(newfd));
 	newfd.fd = fd;
 	newfd.events = ev;
 	poll_socket_fds.push_back(newfd);

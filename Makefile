@@ -25,10 +25,10 @@ run_cgi_makefile:
 	cd cgi && $(MAKE) -C cgi
 
 clean:
-	rm -rf ${NAME}
+	rm -f ${OBJS}
 
 fclean: clean
-	rm -rf $(NAME)
+	rm -f $(NAME)
 
 re: fclean $(NAME)
 
