@@ -13,8 +13,11 @@ CC = c++
 
 CFLAGS = -Wall -Wextra -Werror -std=c++98
 
-${NAME}: ${SRCS} ${HEADERS} Makefile
-	${CC} ${CFLAGS} ${SRCS} -o ${NAME}
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+${NAME}: ${OBJS} ${HEADERS} Makefile
+	${CC} ${CFLAGS} ${OBJS} -o ${NAME}
 
 all: ${NAME} run_cgi_makefile
 
