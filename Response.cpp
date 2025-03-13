@@ -151,7 +151,7 @@ void	Response::handle_autoindex(Request request, Server &server, Location &locat
 		{
 			string response_body;
 			string dir_name = path.substr(1, path.length() - 1); // to remove the slash
-			autoindex auto_index;
+			Autoindex auto_index;
 
 			auto_index.generate_autoindex_page_first_part(response_body, dir_name); //generate the top part of the html page (styling, headers....)
 			auto_index.generate_autoindex_page_second_part(response_body, dir, path); //generate the body part (readdir and listing the filees)

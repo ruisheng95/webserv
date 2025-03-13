@@ -5,7 +5,7 @@
 
 using std::string;
 
-class autoindex
+class Autoindex
 {
 	public:
 	string	get_file_size(size_t filesize);

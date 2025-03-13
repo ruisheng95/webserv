@@ -10,7 +10,7 @@ static std::string my_itoa(size_t i)
 	return s;
 }
 
-string	autoindex::get_file_size(size_t filesize)
+string	Autoindex::get_file_size(size_t filesize)
 {
 	string	res;
 	size_t	num;
@@ -39,7 +39,7 @@ string	autoindex::get_file_size(size_t filesize)
 	return res;
 }
 
-void	autoindex::generate_autoindex_page_first_part(string &response_body, string dir_name)
+void	Autoindex::generate_autoindex_page_first_part(string &response_body, string dir_name)
 {
 	response_body += "<!DOCTYPE html>";
 	response_body += "<html>";
@@ -65,7 +65,7 @@ void	autoindex::generate_autoindex_page_first_part(string &response_body, string
 	response_body += "</div><hr />"; //hr / inserts a horizontal line
 }
 
-void	autoindex::put_file_name(string &response_body, string filename, DIR *checkdir)
+void	Autoindex::put_file_name(string &response_body, string filename, DIR *checkdir)
 {
 	response_body += "<div class = 'fn'>";
 	if(checkdir)
@@ -75,7 +75,7 @@ void	autoindex::put_file_name(string &response_body, string filename, DIR *check
 	response_body += "</div>";
 }
 
-void	autoindex::put_last_modified_time(string &response_body, struct stat &file_info)
+void	Autoindex::put_last_modified_time(string &response_body, struct stat &file_info)
 {
 	char		buffer[100];
 	struct tm	*tm_info;	
@@ -88,7 +88,7 @@ void	autoindex::put_last_modified_time(string &response_body, struct stat &file_
 	response_body += "</div>";
 }
 
-void	autoindex::put_size(string &response_body, struct stat &file_info, DIR *checkdir)
+void	Autoindex::put_size(string &response_body, struct stat &file_info, DIR *checkdir)
 {
 	response_body += "<div class = 'size'>";
 	if(checkdir)
@@ -99,13 +99,13 @@ void	autoindex::put_size(string &response_body, struct stat &file_info, DIR *che
 }
 
 
-void	autoindex::get_file_info(struct stat &file_info, string path_and_name)
+void	Autoindex::get_file_info(struct stat &file_info, string path_and_name)
 {
 	if(stat(path_and_name.c_str(), &file_info) != 0) //gets file stats
 		throw std::runtime_error("Error : (autoindex) cant get file stat");
 }
 
-void	autoindex::generate_autoindex_page_second_part(string &response_body, DIR *dir, string path)
+void	Autoindex::generate_autoindex_page_second_part(string &response_body, DIR *dir, string path)
 {
 	struct dirent	*entry;
 	struct stat		file_info;
