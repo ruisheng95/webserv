@@ -217,6 +217,11 @@ void Config::parse_server_block(size_t &pos, vector<Server> &server_list)
 			newLocation.parse_location_main(pos, this->file_data);
 			newServer.get_location().push_back(newLocation);
 		}
+		else if (this->file_data.substr(pos, 1) == "#")
+		{
+			pos = this->file_data.find_first_of(";" , pos) + 1;
+			continue;
+		}
 		else if(this->file_data[pos] == '}') //need this incase we encounter '}' after skip_whitespace
 			break;
 		else

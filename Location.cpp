@@ -270,6 +270,11 @@ void	Location::parse_location_main(size_t &pos, string file_data)
 			parse_return(pos, file_data);
 		else if(file_data.substr(pos, 9) == "autoindex")
 			parse_autoindex(pos, file_data);
+		else if (file_data.substr(pos, 1) == "#")
+		{
+			pos = file_data.find_first_of(";" , pos) + 1;
+			continue;
+		}
 		else if (file_data[pos] == '}')
 			break;
 		else
