@@ -6,35 +6,17 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <string>
-#include <sstream>
-#include <iostream>
 #include <vector>
 #include <fstream>
 using std::vector;
 using std::string;
 using std::map;
 
-static std::string my_itoa(size_t i){
-	std::string s;
-	std::stringstream out;
-	out << i;
-	s = out.str();
-	return s;
-}
+std::string my_itoa(size_t i);
 
-static int my_atoi(std::string s) {
-	int i;
-	std::istringstream(s) >> i;
-	return i;
-}
+int my_atoi(std::string s);
 
-static int my_hex_to_int(std::string s) {
-	int i;
-	std::stringstream ss;
-	ss << std::hex << s;
-	ss >> i;
-	return i;
-}
+int my_hex_to_int(std::string s);
 
 Response::Response() {}
 

@@ -2,7 +2,6 @@
 #include "Socket.hpp"
 #include <fcntl.h>
 #include <string>
-#include <sstream>
 #include <sys/socket.h>
 #include <iostream>
 using std::string;
@@ -11,11 +10,7 @@ using std::pair;
 using std::cout;
 using std::endl;
 
-static int my_atoi(std::string s) {
-	int i;
-	std::istringstream(s) >> i;
-	return i;
-}
+int my_atoi(std::string s);
 
 Request::Request() {}
 
@@ -133,7 +128,6 @@ void Request::parse_body(size_t &pos, int socket_fd)
 
 	// if(this->content_length.length() != 0)
 	// 	this->body = req_data.substr(pos, req_data.length() - pos); //get the rest of the data ig
-
 
 	//for ck laptop:
 	string entire_body;

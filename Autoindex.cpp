@@ -1,18 +1,13 @@
 #include "Autoindex.hpp"
 #include <cstring>
+#include <ctime>
+#include <stdexcept>
 #include <sys/stat.h>
-#include <sstream>
+// #include <sstream>
 
 using std::string;
 
-static std::string my_itoa(size_t i)
-{
-	std::string s;
-	std::stringstream out;
-	out << i;
-	s = out.str();
-	return s;
-}
+std::string my_itoa(size_t i);
 
 string	Autoindex::get_file_size(size_t filesize)
 {

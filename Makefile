@@ -1,6 +1,6 @@
 SRCS = \
 Config.cpp main.cpp HTTP.cpp Server.cpp Socket.cpp \
-Request.cpp Location.cpp Response.cpp Cgi.cpp Autoindex.cpp
+Request.cpp Location.cpp Response.cpp Cgi.cpp Autoindex.cpp utils.cpp
 
 HEADERS = Config.hpp HTTP.hpp Server.hpp Socket.hpp \
 Request.hpp Location.hpp Response.hpp Cgi.hpp Autoindex.hpp webserv.hpp
