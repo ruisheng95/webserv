@@ -188,7 +188,7 @@ string	Response::parse_resources(string path)
 	if(!infile.is_open())
 		return "";
 	while(getline(infile, buffer))
-		res += buffer;
+		res += buffer + "\n";
 	return res;
 }
 

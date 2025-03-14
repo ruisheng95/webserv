@@ -1,0 +1,33 @@
+.chee-kit {
+  color: green;
+  animation: slide 5s linear infinite;
+  white-space: nowrap;
+  display: inline-block;
+  text-align: left;
+  font-size: 75px;
+}
+
+@keyframes slide {
+  0% {
+    transform: translatex(100vw);
+  }
+
+  100% {
+    transform: translatex(-40vw);
+  }
+}
+
+.cat {
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.dark-mode {
+  background-color: black;
+  color: white;
+}
