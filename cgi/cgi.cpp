@@ -4,6 +4,7 @@
 # include <stdlib.h>
 # include <fstream>
 # include <map>
+# include <string>
 
 using std::string;
 using std::cin;
@@ -15,7 +16,7 @@ string parse_resources(string path)
 {
 	string res;
 	string buffer;
-	std::ifstream infile(path);
+	std::ifstream infile(path.c_str());
 	if(!infile.is_open())
 		return "";
 	while(getline(infile, buffer))
@@ -67,14 +68,14 @@ int main(int argc, char **argv, char **envp)
 
 	// //temp for testing
 
-	// total_body = "------WebKitFormBoundary0aMijw4giNtlL1DE\r\n"
-    //          "Content-Disposition: form-data; name=\"file\"; filename=\"test.txt\"\r\n"
-    //          "Content-Type: text/plain\r\n\r\n"
-    //          "123\r\n"
-    //          "------WebKitFormBoundary0aMijw4giNtlL1DE--\r\n";
+	total_body = "------WebKitFormBoundary0aMijw4giNtlL1DE\r\n"
+             "Content-Disposition: form-data; name=\"file\"; filename=\"test.txt\"\r\n"
+             "Content-Type: text/plain\r\n\r\n"
+             "123\r\n"
+             "------WebKitFormBoundary0aMijw4giNtlL1DE--\r\n";
 
-	while(getline(cin, input))
-		total_body += input + "\n";
+	// while(getline(cin, input))
+	// 	total_body += input + "\n";
 
 	// total_body += "\n";
 

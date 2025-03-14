@@ -7,7 +7,7 @@ NAME = upload.cgi
 
 CC = c++
 
-CFLAGS = -std=c++98
+CFLAGS = -Wall -Wextra -Werror
 
 ${NAME}: ${SRCS}
 	${CC} ${CFLAGS} ${SRCS} -o ${NAME}
