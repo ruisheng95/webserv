@@ -10,7 +10,7 @@ using std::pair;
 using std::cout;
 using std::endl;
 
-int my_atoi(std::string s);
+ssize_t my_atoi(std::string s);
 
 Request::Request() {}
 
@@ -124,45 +124,48 @@ void Request::parse_header_fields(size_t &pos)
 void Request::parse_body(size_t &pos, int socket_fd)
 {
 	//for rng laptop (idk if it will work lol i cant test): 
-	// pos += 2; // skip /r/n
+	pos += 2; // skip /r/n
 
-	// if(this->content_length.length() != 0)
-	// 	this->body = req_data.substr(pos, req_data.length() - pos); //get the rest of the data ig
+	if(this->content_length.length() != 0)
+		this->body = req_data.substr(pos, req_data.length() - pos); //get the rest of the data ig
+	(void)socket_fd;
 
 	//for ck laptop:
-	string entire_body;
-	(void)pos;
-	if(content_length.length() == 0)
-		return ;
-	unsigned long long contentlen = my_atoi(content_length);
-	//cout << "\n\n__________________________________" << endl;
-	//cout << "CONTENTLENGTH: " << contentlen << endl;
+	// string entire_body;
+	// (void)pos;
+	// if(content_length.length() == 0)
+	// 	return ;
+	// unsigned long long contentlen = my_atoi(content_length);
+	// //cout << "\n\n__________________________________" << endl;
+	// cout << "CONTENTLENGTH: " << contentlen << "," << content_length<< "," << content_length.length() << endl;
 
-	if (fcntl(socket_fd, F_GETFL, 0) < 0)
-		throw std::runtime_error("Error: failed to set non-blocking mode");
+	// if (fcntl(socket_fd, F_GETFL, 0) < 0)
+	// 	throw std::runtime_error("Error: failed to set non-blocking mode");
 
-	//first read
-	char buffer1[contentlen + 1];
-	int bytesread1 = recv(socket_fd, buffer1, contentlen, 0);
-	buffer1[bytesread1] = '\0';
-	//cout << "bytesread1: " << bytesread1 << endl;
-	entire_body += buffer1;
+	// //first read
+	// char buffer1[contentlen + 1];
+	// int bytesread1 = recv(socket_fd, buffer1, contentlen, 0);
+	// buffer1[bytesread1] = '\0';
+	// //cout << "bytesread1: " << bytesread1 << endl;
+	// entire_body += buffer1;
 
-	//second read
-	char buffer2[contentlen - bytesread1 + 1];
-	int bytesread2 = recv(socket_fd, buffer2, contentlen, 0);
-	buffer2[bytesread2] = '\0';
-	//cout << "bytesread2: " << bytesread2 << endl;
-	entire_body += buffer2;
+	// //second read
+	// char buffer2[contentlen - bytesread1 + 1];
+	// int bytesread2 = recv(socket_fd, buffer2, contentlen, 0);
+	// buffer2[bytesread2] = '\0';
+	// //cout << "bytesread2: " << bytesread2 << endl;
+	// entire_body += buffer2;
 
-	//third read
-	char buffer3[contentlen - bytesread2 - bytesread1 + 1];
-	int bytesread3 = recv(socket_fd, buffer3, contentlen, 0);
-	buffer3[bytesread3] = '\0';
-	//cout << "bytesread3: " << bytesread3 << endl;
-	entire_body += buffer3;
-	this->body = entire_body;
-	this->req_data.append(entire_body);
+	// //third read
+	// char buffer3[contentlen - bytesread2 - bytesread1 + 1];
+	// int bytesread3 = recv(socket_fd, buffer3, contentlen, 0);
+	// buffer3[bytesread3] = '\0';
+	// //cout << "bytesread3: " << bytesread3 << endl;
+	// entire_body += buffer3;
+	// this->body = entire_body;
+	// this->req_data.append(entire_body);
+
+	
 	//cout << "BODY: " << endl;
 	//cout << this->body << endl;
 }

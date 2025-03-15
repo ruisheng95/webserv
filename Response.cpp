@@ -14,7 +14,7 @@ using std::map;
 
 std::string my_itoa(size_t i);
 
-int my_atoi(std::string s);
+ssize_t my_atoi(std::string s);
 
 int my_hex_to_int(std::string s);
 

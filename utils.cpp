@@ -1,5 +1,6 @@
 #include <sstream>
 #include <sys/types.h>
+#include <iostream>
 
 ssize_t my_atoi(std::string s) {
 	ssize_t i;
@@ -22,6 +23,18 @@ int my_hex_to_int(std::string s) {
 	ss << std::hex << s;
 	ss >> i;
 	return i;
+}
+
+void	print_2d_array(char **cmd)
+{
+	int	i;
+
+	i = 0;
+	while (cmd[i])
+	{
+		std::cout << cmd[i] << std::endl; 
+		i++;
+	}
 }
 
 // #include <iostream>

@@ -40,7 +40,7 @@ char	**Cgi::config_env(Request &request)
 		string field = it->first;
 		// Not available in c++98
 		// std::replace(field.begin(), field.end(), '-', '_');
-		replaceAll(field, "-", "_");
+		field = replaceAll(field, "-", "_");
 		for(size_t i = 0; i < field.size(); i++)
 			field[i] = std::toupper(field[i]);
 		env[j++] = strdup((field + "=" + it->second).c_str());
@@ -52,13 +52,12 @@ char	**Cgi::config_env(Request &request)
 
 string	Cgi::get_cgi_output(int pipefd)
 {
-	char buffer[1000];
+	char buffer[1001];
 	string res;
 	int bytesread;
-
+	memset(buffer, 0, 1001);
 	while((bytesread = read(pipefd, buffer, 1000) > 0))
 		res += buffer;
-
 	return res;
 }
 
@@ -70,11 +69,11 @@ void	Cgi::Cgi_main(Request &request, Response &response, Location &location, Ser
 	int pipefd_output[2];
 	int exit_status;
 	//for normal scripts
-	//char *argv[] = {(char *)cgi_path.c_str(), NULL}; <- undo this if wanna do normal script
+	char *argv[] = {(char *)cgi_path.c_str(), NULL}; // <- undo this if wanna do normal script
 
 	//for python scripts only
-	string pythoninterprator = "/usr/bin/python3";
-	char *argv[] = {(char *)pythoninterprator.c_str(), (char*)cgi_path.c_str(), NULL};
+	// string pythoninterprator = "/usr/bin/python3";
+	// char *argv[] = {(char *)pythoninterprator.c_str(), (char*)cgi_path.c_str(), NULL};
 
 	//cout << "REQUEST BODY: " << request.get_body() << "\n----------------------------------" << endl;
 	if(pipe(pipefd_input) == -1 || pipe(pipefd_output) == -1)
@@ -111,7 +110,7 @@ void	Cgi::Cgi_main(Request &request, Response &response, Location &location, Ser
 			// }
 
 			//for python scripts
-			if(execve(pythoninterprator.c_str(), argv, env))
+			if(execve(cgi_path.c_str(), argv, env))
 			{
 				perror("execve");
 				exit(-1);
