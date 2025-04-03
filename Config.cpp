@@ -186,9 +186,9 @@ void Config::parse_socket_addr(Server &newServer)
 
 	pair<string, string> sock_host_port_pair = std::make_pair(host, port);
 	vector<pair<string, string> >::iterator it = std::find(newServer.socket_addr.begin(), newServer.socket_addr.end(), sock_host_port_pair);
-	if (it != newServer.socket_addr.end())
-		throw std::invalid_argument("Error: duplicate socket host-port address detected");
-	newServer.socket_addr.push_back(sock_host_port_pair);
+	// Push non-duplicate pairs
+	if (it == newServer.socket_addr.end())
+		newServer.socket_addr.push_back(sock_host_port_pair);
 }
 
 void Config::parse_server_block(size_t &pos, vector<Server> &server_list) 

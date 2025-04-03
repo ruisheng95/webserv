@@ -344,12 +344,20 @@ string Response::urlDecode(string &str)
 
 Server	&Response::find_server(Request request, vector<Server>& Servers)
 {
+	// Return the last successful match server
+	Server* server = 0;
 	for(size_t i = 0; i < Servers.size(); i++)
 	{
 		if(request.get_port() == Servers[i].get_port())
-			return Servers[i];
+		{
+			if (Servers[i].get_server_name() == ""
+			|| (Servers[i].get_server_name() != "" && request.get_host() == Servers[i].get_server_name()))
+				server = &Servers[i];
+		}
 	}
-	throw std::runtime_error("Error: cannot find respective server");
+	if (server == 0)
+		throw std::runtime_error("Error: cannot find respective server");
+	return *server;
 }
 
 Location *Response::get_location(Request request, Server &server)
