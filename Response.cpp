@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <unistd.h>
+#include <iostream>
 using std::vector;
 using std::string;
 using std::map;
@@ -79,8 +81,10 @@ string	Response::get_error_page(string error_code, Server &server)
 		{
 			string filepath = "." + it->second;
 			std::ifstream infile(filepath.c_str());
-			if(!infile.is_open())
-				throw std::runtime_error("Error: cannot open error file");
+			if(!infile.is_open()) {
+				this->errorCode = error_code;
+				return "";
+			}
 			while(getline(infile, buffer))
 				error_page_contents.append(buffer);
 		}
@@ -90,9 +94,11 @@ string	Response::get_error_page(string error_code, Server &server)
 
 void	Response::handle_error(Request request, string error_code, Server &server)
 {
+	// Reset errorCode in Response, to be used in get_error_page
+	this->errorCode = "";
 	string start_line = get_start_line(request, error_code, server);
 	string error_page_contents = get_error_page(error_code, server);
-	if(error_page_contents == "")
+	if(this->errorCode != "")
 	{
 		error_page_contents += "<!DOCTYPE html>";
 		error_page_contents += "<head>";
@@ -121,19 +127,23 @@ void	Response::do_indexing(Request request, Server &server, Location *location, 
 	vector<string>::iterator ite = location->get_index().end();
 	while(it != ite)
 	{
-		if(file_contents == "")
-			file_contents = parse_resources(resource_path + *it);
-		if(file_contents == "")
+		// Empty file is a valid content. Check error code instead
+		file_contents = parse_resources(resource_path + *it);
+		if (this->errorCode != "" && it + 1 != ite) {
+			// If error, and not last index file (so that error code can go to handle_error func)
+			// Reset error code, try next file
+			this->errorCode = "";
 			it++;
-		else
+		} else {
 			break;
+		}
 	}
-	if(file_contents != "")
-		this->response_data = get_start_line(request, "200", server) + get_headers(file_contents, get_file_type(resource_path + *it)) + file_contents;
+	if (this->errorCode != "")
+		handle_error(request, this->errorCode, server);
 	else if(location->get_autoindex() == true)
 		handle_autoindex(request, server, *location, resource_path);
 	else
-		handle_error(request, "404", server);
+		this->response_data = get_start_line(request, "200", server) + get_headers(file_contents, get_file_type(resource_path + *it)) + file_contents;
 }
 
 void	Response::handle_autoindex(Request request, Server &server, Location &location, string path)
@@ -166,9 +176,19 @@ string	Response::parse_resources(string path)
 {
 	string res;
 	string buffer;
-	std::ifstream infile(path.c_str());
-	if(!infile.is_open())
+	if (access(path.c_str(), F_OK) != 0) {
+		this->errorCode = "404";
 		return "";
+	}
+	else if (access(path.c_str(), R_OK) != 0) {
+		this->errorCode = "403";
+		return "";
+	}
+	std::ifstream infile(path.c_str());
+	if(!infile.is_open()) {
+		this->errorCode = "404";
+		return "";
+	}
 	while(getline(infile, buffer))
 		res += buffer + "\n";
 	return res;
@@ -202,8 +222,8 @@ string	Response::get_file_type(string path)
 void	Response::get_file_contents(Request request, Server &server, string resource_path)
 {
 	string file_contents = parse_resources(resource_path);
-	if(file_contents == "")
-		handle_error(request, "404", server);
+	if(this->errorCode != "")
+		handle_error(request, this->errorCode, server);
 	else
 		this->response_data = get_start_line(request, "200", server) + get_headers(file_contents, get_file_type(resource_path)) + file_contents;
 }

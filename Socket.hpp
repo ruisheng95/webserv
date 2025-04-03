@@ -52,6 +52,7 @@ class Response //include this here first cuz somehow incomplete type
 {
 	private:
 	std::string response_data;
+	std::string errorCode;
 
 	public:
 		Response();
