@@ -5,7 +5,7 @@
 #include <cstring>
 #include <unistd.h>
 #include <sys/wait.h>
-// #include <iostream>
+#include <iostream>
 #include <cstdlib>
 #include <cstdio>
 using std::string;
@@ -27,26 +27,39 @@ static std::string replaceAll(std::string str, const std::string& from, const st
 }
 
 // I love Deepseek AI
-int waitpid_with_timeout(pid_t pid, int* status, unsigned int seconds) {
-    fd_set readfds;
-    struct timeval timeout;
-    
-    while (true) {
-        int result = waitpid(pid, status, WNOHANG);
-        
-        if (result == pid) return pid;
-        if (result == -1) return -1;
-        
-        FD_ZERO(&readfds);
+int waitpid_with_timeout(pid_t pid, unsigned int seconds) {
+	int sel = 1;
+	int selectPid = fork();
+	int pidStatus = 0;
+	int selectStatus = 0;
+	if(selectPid == 0) {
+		fd_set readfds;
+		struct timeval timeout;
+
+		FD_ZERO(&readfds);
         // We need some fd to watch - using stdin (0) as dummy
         FD_SET(0, &readfds);
         
         timeout.tv_sec = seconds;
         timeout.tv_usec = 0;
+        sel = select(1, &readfds, NULL, NULL, &timeout);
+		if (sel == 0) exit(2);  // Timeout
+        if (sel == -1) exit(1); // Error
+		exit(0);
+	}
+    
+    while (true) {
+        int result = waitpid(pid, &pidStatus, WNOHANG);
+		int resultSelect = waitpid(selectPid, &selectStatus, WNOHANG);
         
-        int sel = select(1, &readfds, NULL, NULL, &timeout);
-        if (sel == 0) return -2;  // Timeout
-        if (sel == -1) return -1; // Error
+        if (result == pid) return pid;
+        if (result == -1) return -1;
+		if (resultSelect == -1) {
+			if(WIFEXITED(selectStatus) && WEXITSTATUS(selectStatus) == 2) {
+				return -2;
+			}
+			return -1;
+		}
     }
 }
 
@@ -140,9 +153,10 @@ void	Cgi::Cgi_main(Request &request, Response &response, Location &location, Ser
 		close(pipefd_input[0]);
 		close(pipefd_input[1]);
 		close(pipefd_output[1]);
-		int result = waitpid_with_timeout(pid, &exit_status, 5);
-		if(result != 0)
+		int result = waitpid_with_timeout(pid, 5);
+		if(result <= 0)
 		{
+			// std::cout << result << std::endl;
 			if (result == -2) {
 				// You might want to kill the child here
 				kill(pid, SIGKILL);
