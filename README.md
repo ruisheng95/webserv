@@ -16,3 +16,9 @@
 curl --resolve abc:8090:127.0.0.1 http://abc:8090/
 curl http://127.0.0.1:8090/
 ```
+
+#### Test client_max_body_size
+```bash
+curl -v http://localhost:8090 -d '{"abc":"12"}'
+curl -v http://localhost:8090 -d '{"abc":"122"}' #Exceed 12 bytes
+```

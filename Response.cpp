@@ -73,6 +73,7 @@ string	Response::get_headers(string content, string content_type)
 
 string	Response::get_error_page(string error_code, Server &server)
 {
+	this->errorCode = error_code;
 	string error_page_contents;
 	string buffer;
 	for(map<string, string>::iterator it = server.get_error_pages().begin(); it != server.get_error_pages().end(); it++)
@@ -82,9 +83,10 @@ string	Response::get_error_page(string error_code, Server &server)
 			string filepath = "." + it->second;
 			std::ifstream infile(filepath.c_str());
 			if(!infile.is_open()) {
-				this->errorCode = error_code;
 				return "";
 			}
+			// Clear error code, so that response body is from error_page_contents
+			this->errorCode = "";
 			while(getline(infile, buffer))
 				error_page_contents.append(buffer);
 		}
@@ -264,11 +266,11 @@ void	Response::handle_post(Request request, Server &server)
 		handle_error(request, "405", server);
 	else if(location->get_return() != "")
 		handle_return(request, server, *location); //check return
-	else if(location->get_cgi_pass() == "")
-		handle_error(request, "404", server);
 	else if(request.get_content_length() != "" && server.get_client_max_body_size() != ""
 			&& my_atoi(request.get_content_length()) > my_atoi(server.get_client_max_body_size()))
 		handle_error(request, "413", server);
+	else if(location->get_cgi_pass() == "")
+		handle_error(request, "404", server);
 	else if(check_request_body_valid(request) == 0)
 		handle_error(request, "422", server);
 	else
