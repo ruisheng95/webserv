@@ -21,7 +21,8 @@ route = os.environ.get("ROUTE")
 #this gay ass function helps u read from stdin and sort the request body for u
 #wtf i feel like c and cpp is a joke now
 form = cgi.FieldStorage()
-
+# while True: 
+# 	pass
 if request_method == "POST":
 
 	if "file" in form:

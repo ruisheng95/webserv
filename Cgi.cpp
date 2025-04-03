@@ -5,12 +5,12 @@
 #include <cstring>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <iostream>
+// #include <iostream>
 #include <cstdlib>
 #include <cstdio>
 using std::string;
-using std::cout;
-using std::endl;
+// using std::cout;
+// using std::endl;
 using std::map;
 
 Cgi::Cgi() {}
@@ -24,6 +24,30 @@ static std::string replaceAll(std::string str, const std::string& from, const st
         start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
     }
     return str;
+}
+
+// I love Deepseek AI
+int waitpid_with_timeout(pid_t pid, int* status, unsigned int seconds) {
+    fd_set readfds;
+    struct timeval timeout;
+    
+    while (true) {
+        int result = waitpid(pid, status, WNOHANG);
+        
+        if (result == pid) return pid;
+        if (result == -1) return -1;
+        
+        FD_ZERO(&readfds);
+        // We need some fd to watch - using stdin (0) as dummy
+        FD_SET(0, &readfds);
+        
+        timeout.tv_sec = seconds;
+        timeout.tv_usec = 0;
+        
+        int sel = select(1, &readfds, NULL, NULL, &timeout);
+        if (sel == 0) return -2;  // Timeout
+        if (sel == -1) return -1; // Error
+    }
 }
 
 char	**Cgi::config_env(Request &request)
@@ -91,7 +115,6 @@ void	Cgi::Cgi_main(Request &request, Response &response, Location &location, Ser
 			exit(0);
 		}
 		waitpid(pid, &exit_status,0);
-
 		pid = fork();
 		if(pid == 0)
 		{
@@ -110,19 +133,21 @@ void	Cgi::Cgi_main(Request &request, Response &response, Location &location, Ser
 			// }
 
 			//for python scripts
-			if(execve(cgi_path.c_str(), argv, env))
-			{
-				perror("execve");
-				exit(-1);
-			}
-			exit(0);
+			execve(cgi_path.c_str(), argv, env);
+			perror("execve");
+			exit(-1);
 		}
 		close(pipefd_input[0]);
 		close(pipefd_input[1]);
 		close(pipefd_output[1]);
-		if(exit_status != 0)
+		int result = waitpid_with_timeout(pid, &exit_status, 5);
+		if(result != 0)
 		{
-			cout << "cgi_path: " << cgi_path << endl;
+			if (result == -2) {
+				// You might want to kill the child here
+				kill(pid, SIGKILL);
+				waitpid(pid, &exit_status, 0);  // Clean up zombie
+			}
 			response.handle_error(request, "500", server);
 		}
 		else
