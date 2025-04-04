@@ -9,7 +9,6 @@
 #include <vector>
 #include <fstream>
 #include <unistd.h>
-#include <iostream>
 using std::vector;
 using std::string;
 using std::map;
@@ -289,7 +288,11 @@ void	Response::handle_delete(Request request, Server &server)
 		handle_error(request, "405", server);
 	else if(location->get_return() != "")
 		handle_return(request, server, *location);
-	//not done yet
+	else
+	{
+		Cgi cgi;
+		cgi.Cgi_main(request, *this, *location, server);
+	}
 }
 
 /////////////////////////////////////////////

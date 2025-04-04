@@ -24,7 +24,6 @@ form = cgi.FieldStorage()
 # while True: 
 # 	pass
 if request_method == "POST":
-
 	if "file" in form:
 
 		#file item is like a struct which contains information about the file
@@ -52,7 +51,6 @@ if request_method == "POST":
 	else:
 		msg = "Failed to upload file"
 		print("HTTP/1.1 500 Internal Server Error\r\n", end="")
-	
 	response_body = "<!DOCTYPE html>"
 	response_body += "<html>"
 	response_body += "<head></head>"
@@ -124,6 +122,27 @@ elif request_method == "GET":
 	print("\r\n", end="")
 	print(response_body)
 
+elif request_method == "DELETE":
+	# print("HTTP/1.1 200 OK\r\n", end="")
+	# print("abc", public_files_dir + form["filename"].value)
+	if "filename" in form and os.path.isfile(public_files_dir + form["filename"].value) and os.access(public_files_dir + form["filename"].value, os.W_OK):
+		os.remove(public_files_dir + form["filename"].value)
+		msg = "Succesfully deleted file!"
+		print("HTTP/1.1 200 OK\r\n", end="")
+	else:
+		msg = "Failed to delete file"
+		print("HTTP/1.1 500 Internal Server Error\r\n", end="")
+	response_body = "<!DOCTYPE html>"
+	response_body += "<html>"
+	response_body += "<head></head>"
+	response_body += "<body><center><h1>"+msg+"</h1></center></body>"
+	response_body += "</html>"
+	content_type = "text/html"
+	print("Content-Type: " + content_type + "\r\n", end="")
+	print("Connection: keep-alive\r\n", end="")
+	print("Content-Length: " + str(len(response_body)) + "\r\n", end="")
+	print("\r\n", end="")
+	print(response_body)
 
 
 

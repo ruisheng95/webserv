@@ -53,7 +53,7 @@ server {
 	listen 127.0.0.1:8200;
 
 	location /cgi {
-		allowed_methods GET POST;
+		allowed_methods GET POST DELETE;
 		cgi_pass /cgi/upload.py;
 		index index.htm index.html;
 	}

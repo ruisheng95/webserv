@@ -27,3 +27,8 @@ curl -v http://localhost:8090 -d '{"abc":"122"}' #Exceed 12 bytes
 ```
 http://localhost:8200/cgi/upload.py/testwebpage.html
 ```
+
+#### Test CGI DELETE
+```
+curl -v -X DELETE http://localhost:8200/cgi/upload.py -d filename=testwebpage.html
+```
