@@ -127,7 +127,7 @@ void	Cgi::Cgi_main(Request &request, Response &response, Location &location, Ser
 			close(pipefd_input[1]);
 			exit(0);
 		}
-		waitpid(pid, &exit_status,0);
+		// waitpid(pid, &exit_status,0); // If send large file, the write func in child will block
 		pid = fork();
 		if(pid == 0)
 		{

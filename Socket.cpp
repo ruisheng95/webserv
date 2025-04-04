@@ -118,20 +118,36 @@ int	Socket::setup_socket(string host, string port, struct addrinfo **reso)
 ////////////////////////////////////////process request////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
+// Subject PDF don't allow more than one select function 🤷‍♂️
+ void	Socket::better_receive_data(Socket &socket)
+{
+	char buffer[900000] = {0}; //HARDCODE AH
+	ssize_t bytes_received;
+	while ((bytes_received = recv(socket.sock_fd, buffer, sizeof(buffer), 0)) > 0) {
+		fd_set readfds;
+		struct timeval timeout;
+		timeout.tv_sec = 0;
+        timeout.tv_usec = 20000; // 20ms timeout
+		FD_ZERO(&readfds);
+        FD_SET(socket.sock_fd, &readfds);
+		int result = select(socket.sock_fd + 1, &readfds, NULL,NULL,&timeout);
+		if(bytes_received > 0)
+			socket.get_req().set_data(socket.get_req().get_data().append(buffer, bytes_received));
+		if (result <= 0) {
+			break;
+		}
+	}
+	socket.get_req().parse_request_data_main(socket.sock_fd);
+}
+
 void	Socket::receive_data(Socket &socket)
 {
 	char buffer[900000] = {0}; //HARDCODE AH
-	ssize_t bytes_received = recv(socket.sock_fd, buffer, sizeof(buffer) - 1, 0);
-	if(bytes_received > 0) //reminds me of gnl exam haih so gay
-	{
-		buffer[bytes_received] = '\0';
-		//cout << "Received from client (FD " << socket.sock_fd << " ) : " << buffer << endl;
-	}
-	else if(bytes_received < 0)
+	ssize_t bytes_received = recv(socket.sock_fd, buffer, sizeof(buffer), 0);
+	if(bytes_received < 0)
 		throw std::runtime_error("Error: recv failed");
 	socket.get_req().set_data(socket.get_req().get_data().append(buffer, bytes_received));
 	socket.get_req().parse_request_data_main(socket.sock_fd);
-	//print_request(socket.get_req());
 }
 
 void	Socket::process_req_POLLIN_listen_socket(int i ,vector<pair<int, struct addrinfo> > &sockets_addrinfo)//process listening socket
@@ -163,7 +179,7 @@ void	Socket::process_req_POLLIN_listen_socket(int i ,vector<pair<int, struct add
 void	Socket::process_req_POLLIN_connection_socket(int i)//process connection socket
 {
 	int connect_index = get_io_connection(poll_socket_fds[i].fd);
-	receive_data(io_connections[connect_index]);
+	better_receive_data(io_connections[connect_index]);
 	update_fd_event(poll_socket_fds[i].fd, POLLIN | POLLOUT); // need to update here instead of when accept() returns the socket if not will have error
 }
 

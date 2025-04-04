@@ -110,6 +110,7 @@ class Socket
 
 		//request stuff
 		void	receive_data(Socket &socket);
+		void 	better_receive_data(Socket &socket);
 		void	process_req_POLLIN_connection_socket(int i);
 		void	process_req_POLLIN_listen_socket(int i, std::vector<std::pair<int, struct addrinfo> > &sockets_addrinfo);
 		void	process_req_POLLOUT(int i, std::vector<Server> Servers); //output stuff and close socket
