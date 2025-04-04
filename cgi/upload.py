@@ -68,9 +68,8 @@ if request_method == "POST":
 elif request_method == "GET":
 
 	route_parts = route.rsplit("/")
-
 	#check on this ltr
-	file_name = route_parts[2]
+	file_name = route_parts[3]
 	#sys.stderr.write(f"Error: {file_name}\n")
 
 	if os.path.exists(public_files_dir + file_name):
