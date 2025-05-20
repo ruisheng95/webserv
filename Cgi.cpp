@@ -8,6 +8,11 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
+
+#ifdef __APPLE__
+	#include <csignal>
+	#include <signal.h>
+#endif
 using std::string;
 // using std::cout;
 // using std::endl;

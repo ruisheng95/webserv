@@ -63,3 +63,12 @@ server {
 		index index.htm index.html;
 	}
 }
+
+server {
+	listen 127.0.0.1:8300;
+
+	location /{
+		allowed_methods GET;
+	}
+}
+

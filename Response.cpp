@@ -9,6 +9,7 @@
 #include <vector>
 #include <fstream>
 #include <unistd.h>
+#include <iostream>
 using std::vector;
 using std::string;
 using std::map;
@@ -143,8 +144,10 @@ void	Response::do_indexing(Request request, Server &server, Location *location, 
 		handle_error(request, this->errorCode, server);
 	else if(location->get_autoindex() == true)
 		handle_autoindex(request, server, *location, resource_path);
-	else
+	else if(file_contents != "")
 		this->response_data = get_start_line(request, "200", server) + get_headers(file_contents, get_file_type(resource_path + *it)) + file_contents;
+	else
+		handle_error(request, "403", server);
 }
 
 void	Response::handle_autoindex(Request request, Server &server, Location &location, string path)

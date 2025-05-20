@@ -176,6 +176,7 @@ void Request::parse_request_data_main(int socket_fd)
 	parse_request_line(pos);
 	parse_header_fields(pos);
 	parse_body(pos, socket_fd);
+	//print_request(*this);
 }
 
 void	print_request(Request request)
