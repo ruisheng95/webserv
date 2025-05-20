@@ -130,43 +130,25 @@ void Request::parse_body(size_t &pos, int socket_fd)
 		this->body = req_data.substr(pos, req_data.length() - pos); //get the rest of the data ig
 	(void)socket_fd;
 
-	//for ck laptop:
-	// string entire_body;
-	// (void)pos;
-	// if(content_length.length() == 0)
-	// 	return ;
-	// unsigned long long contentlen = my_atoi(content_length);
-	// //cout << "\n\n__________________________________" << endl;
-	// cout << "CONTENTLENGTH: " << contentlen << "," << content_length<< "," << content_length.length() << endl;
-
-	// if (fcntl(socket_fd, F_GETFL, 0) < 0)
-	// 	throw std::runtime_error("Error: failed to set non-blocking mode");
-
-	// //first read
-	// char buffer1[contentlen + 1];
-	// int bytesread1 = recv(socket_fd, buffer1, contentlen, 0);
-	// buffer1[bytesread1] = '\0';
-	// //cout << "bytesread1: " << bytesread1 << endl;
-	// entire_body += buffer1;
-
-	// //second read
-	// char buffer2[contentlen - bytesread1 + 1];
-	// int bytesread2 = recv(socket_fd, buffer2, contentlen, 0);
-	// buffer2[bytesread2] = '\0';
-	// //cout << "bytesread2: " << bytesread2 << endl;
-	// entire_body += buffer2;
-
-	// //third read
-	// char buffer3[contentlen - bytesread2 - bytesread1 + 1];
-	// int bytesread3 = recv(socket_fd, buffer3, contentlen, 0);
-	// buffer3[bytesread3] = '\0';
-	// //cout << "bytesread3: " << bytesread3 << endl;
-	// entire_body += buffer3;
-	// this->body = entire_body;
-	// this->req_data.append(entire_body);
-
-	
-	//cout << "BODY: " << endl;
+	//get the rest of the body for big files
+	int expected_len = my_atoi(this->content_length.c_str());
+	int curr_len = this->body.size();
+	char buffer[1000];
+	int bytes_to_read;
+	int bytesrecv;
+	while(curr_len < expected_len)
+	{
+		//cout << "curr:" << curr_len << "expected:" << expected_len << endl;
+		if(expected_len - curr_len > 1000)
+			bytes_to_read = 1000;
+		else
+			bytes_to_read = expected_len - curr_len;
+		bytesrecv = recv(socket_fd, buffer, bytes_to_read, 0);
+		buffer[bytesrecv] = '\0';
+		this->body.append(buffer, bytesrecv);
+		this->req_data.append(buffer, bytesrecv); //must use append cannot use += if not the null terminator will corrupt the file data
+		curr_len += bytesrecv;
+	}
 	//cout << this->body << endl;
 }
 

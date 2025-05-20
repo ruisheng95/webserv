@@ -59,8 +59,8 @@ server {
 	}
 
 	location /{
-		allowed_methods GET;
-		index index.htm index.html;
+		allowed_methods GET POST;
+		autoindex on;
 	}
 }
 
@@ -68,7 +68,8 @@ server {
 	listen 127.0.0.1:8300;
 
 	location /{
-		allowed_methods GET;
+		allowed_methods GET POST;
+		autoindex on;
 	}
 }
 

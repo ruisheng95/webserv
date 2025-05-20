@@ -179,7 +179,7 @@ void	Socket::process_req_POLLIN_listen_socket(int i ,vector<pair<int, struct add
 void	Socket::process_req_POLLIN_connection_socket(int i)//process connection socket
 {
 	int connect_index = get_io_connection(poll_socket_fds[i].fd);
-	better_receive_data(io_connections[connect_index]);
+	receive_data(io_connections[connect_index]);
 	update_fd_event(poll_socket_fds[i].fd, POLLIN | POLLOUT); // need to update here instead of when accept() returns the socket if not will have error
 }
 
