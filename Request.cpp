@@ -131,30 +131,31 @@ void Request::parse_body(size_t &pos, int socket_fd)
 	(void)socket_fd;
 
 	//get the rest of the body for big files
-	int expected_len = my_atoi(this->content_length.c_str());
-	int curr_len = this->body.size();
-	char buffer[1000];
-	int bytes_to_read;
-	int bytesrecv;
-	while(curr_len < expected_len)
-	{
-		//cout << "curr:" << curr_len << "expected:" << expected_len << endl;
-		if(expected_len - curr_len > 1000)
-			bytes_to_read = 1000;
-		else
-			bytes_to_read = expected_len - curr_len;
-		bytesrecv = recv(socket_fd, buffer, bytes_to_read, 0);
-		buffer[bytesrecv] = '\0';
-		this->body.append(buffer, bytesrecv);
-		this->req_data.append(buffer, bytesrecv); //must use append cannot use += if not the null terminator will corrupt the file data
-		curr_len += bytesrecv;
-	}
+	// int expected_len = my_atoi(this->content_length.c_str());
+	// int curr_len = this->body.size();
+	// char buffer[1000];
+	// int bytes_to_read;
+	// int bytesrecv;
+	// while(curr_len < expected_len)
+	// {
+	// 	//cout << "curr:" << curr_len << "expected:" << expected_len << endl;
+	// 	if(expected_len - curr_len > 1000)
+	// 		bytes_to_read = 1000;
+	// 	else
+	// 		bytes_to_read = expected_len - curr_len;
+	// 	bytesrecv = recv(socket_fd, buffer, bytes_to_read, 0);
+	// 	buffer[bytesrecv] = '\0';
+	// 	this->body.append(buffer, bytesrecv);
+	// 	this->req_data.append(buffer, bytesrecv); //must use append cannot use += if not the null terminator will corrupt the file data
+	// 	curr_len += bytesrecv;
+	// }
 	//cout << this->body << endl;
 }
 
 void Request::parse_request_data_main(int socket_fd)
 {
 	size_t pos = 0;
+	//cout << this->req_data << endl;
 	parse_request_line(pos);
 	parse_header_fields(pos);
 	parse_body(pos, socket_fd);

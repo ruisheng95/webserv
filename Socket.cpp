@@ -17,6 +17,8 @@ using std::pair;
 using std::cout;
 using std::endl;
 
+ssize_t my_atoi(std::string s);
+
 Socket::Socket() {}
 
 Socket::~Socket() {}
@@ -140,13 +142,33 @@ int	Socket::setup_socket(string host, string port, struct addrinfo **reso)
 	socket.get_req().parse_request_data_main(socket.sock_fd);
 }
 
+int		Socket::find_content_length(string request)
+{
+	size_t pos = request.find("Content-Length:");
+	if(pos == std::string::npos)
+		return 0;
+	size_t end_pos = request.find_first_of("\r\n", pos);
+	string contentlen = request.substr(pos, end_pos - pos);
+	return my_atoi(contentlen.substr(16, contentlen.size() - 16));
+}
+
 void	Socket::receive_data(Socket &socket)
 {
 	char buffer[900000] = {0}; //HARDCODE AH
-	ssize_t bytes_received = recv(socket.sock_fd, buffer, sizeof(buffer), 0);
-	if(bytes_received < 0)
-		throw std::runtime_error("Error: recv failed");
-	socket.get_req().set_data(socket.get_req().get_data().append(buffer, bytes_received));
+	int contentlen = 1;
+	while(contentlen > 0)
+	{
+		ssize_t bytes_received = recv(socket.sock_fd, buffer, sizeof(buffer), 0);
+		if(bytes_received < 0)
+			throw std::runtime_error("Error: recv failed");
+		socket.get_req().set_data(socket.get_req().get_data().append(buffer, bytes_received));
+		string curr_req = socket.get_req().get_data();
+		contentlen = find_content_length(curr_req);
+		if (contentlen == 0)
+			break;
+		int bodystart = curr_req.find("\r\n\r\n") + 4;
+		contentlen -= (curr_req.size() - bodystart);
+	}
 	socket.get_req().parse_request_data_main(socket.sock_fd);
 }
 

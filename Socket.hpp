@@ -122,6 +122,7 @@ class Socket
 		void	set_sock_fd(int sockfd);
 		int		get_io_connection(int fd);
 		void	close_fd(int fd, int fd_index);
+		int		find_content_length(std::string request);
 };
 
 #endif
