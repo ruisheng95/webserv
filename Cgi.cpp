@@ -128,7 +128,8 @@ void	Cgi::Cgi_main(Request &request, Response &response, Location &location, Ser
 			close(pipefd_input[0]);
 			close(pipefd_output[0]);
 			close(pipefd_output[1]);
-			write(pipefd_input[1], request.get_body().c_str(), request.get_body().size());
+			if(write(pipefd_input[1], request.get_body().c_str(), request.get_body().size()) == -1)
+				throw std::runtime_error("Error: cgi write failed");
 			close(pipefd_input[1]);
 			exit(0);
 		}

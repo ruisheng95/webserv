@@ -49,14 +49,14 @@ string	get_file_type(string path)
 		return "text/plain";
 }
 
-void	print(string str)
-{
-	for(size_t i = 0; i < str.length(); i++)
-	{
-		string print = std::to_string(static_cast<int>(str[i])) + "\n";
-		write(2, print.c_str(), print.length());
-	}
-}
+// void	print(string str)
+// {
+// 	for(size_t i = 0; i < str.length(); i++)
+// 	{
+// 		string print = std::to_string(static_cast<int>(str[i])) + "\n";
+// 		write(2, print.c_str(), print.length());
+// 	}
+// }
 
 int main(int argc, char **argv, char **envp)
 {

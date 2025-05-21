@@ -82,7 +82,7 @@ int	Socket::setup_socket(string host, string port, struct addrinfo **reso)
 	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
 	{
 		close(sockfd);
-		throw std::runtime_error("Setsockopt failure: " + string(strerror(errno)));
+		throw std::runtime_error("Error: Setsockopt failed");
 	}	
 	
 	//bind socket
@@ -121,26 +121,26 @@ int	Socket::setup_socket(string host, string port, struct addrinfo **reso)
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 // Subject PDF don't allow more than one select function 🤷‍♂️
- void	Socket::better_receive_data(Socket &socket)
-{
-	char buffer[900000] = {0}; //HARDCODE AH
-	ssize_t bytes_received;
-	while ((bytes_received = recv(socket.sock_fd, buffer, sizeof(buffer), 0)) > 0) {
-		fd_set readfds;
-		struct timeval timeout;
-		timeout.tv_sec = 0;
-        timeout.tv_usec = 20000; // 20ms timeout
-		FD_ZERO(&readfds);
-        FD_SET(socket.sock_fd, &readfds);
-		int result = select(socket.sock_fd + 1, &readfds, NULL,NULL,&timeout);
-		if(bytes_received > 0)
-			socket.get_req().set_data(socket.get_req().get_data().append(buffer, bytes_received));
-		if (result <= 0) {
-			break;
-		}
-	}
-	socket.get_req().parse_request_data_main(socket.sock_fd);
-}
+//  void	Socket::better_receive_data(Socket &socket)
+// {
+// 	char buffer[900000] = {0}; //HARDCODE AH
+// 	ssize_t bytes_received;
+// 	while ((bytes_received = recv(socket.sock_fd, buffer, sizeof(buffer), 0)) > 0) {
+// 		fd_set readfds;
+// 		struct timeval timeout;
+// 		timeout.tv_sec = 0;
+//         timeout.tv_usec = 20000; // 20ms timeout
+// 		FD_ZERO(&readfds);
+//         FD_SET(socket.sock_fd, &readfds);
+// 		int result = select(socket.sock_fd + 1, &readfds, NULL,NULL,&timeout);
+// 		if(bytes_received > 0)
+// 			socket.get_req().set_data(socket.get_req().get_data().append(buffer, bytes_received));
+// 		if (result <= 0) {
+// 			break;
+// 		}
+// 	}
+// 	socket.get_req().parse_request_data_main(socket.sock_fd);
+// }
 
 int		Socket::find_content_length(string request)
 {
@@ -212,7 +212,8 @@ void	Socket::process_req_POLLOUT(int i, vector<Server> Servers) //output stuff a
 	if(socket.get_req().get_req_data().length() <= 0)
 			throw std::runtime_error("Error: no request found");
 	this->response.main_response_function(socket.get_req(), Servers);
-	send(socket.sock_fd, this->response.get_response_data().c_str(), this->response.get_response_data().size(), 0);
+	if(send(socket.sock_fd, this->response.get_response_data().c_str(), this->response.get_response_data().size(), 0) == -1)
+		throw std::runtime_error("Error: send failed");
 	close_fd(poll_socket_fds[i].fd, i); //see explanation in function
 }
 
