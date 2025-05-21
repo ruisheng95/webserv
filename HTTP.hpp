@@ -17,5 +17,6 @@ class HTTP
 		std::vector<std::pair<int, struct addrinfo> > &get_all_sockets_list();
 		void	poll_loop();
 		void	_run_webserv(char **argv);
+		static bool is_run;
 };
 #endif

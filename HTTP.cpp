@@ -3,10 +3,13 @@
 #include "Config.hpp"
 #include <stdexcept>
 #include <sys/poll.h>
+#include <unistd.h>
 
 using std::string;
 using std::vector;
 using std::pair;
+
+bool HTTP::is_run = true;
 
 HTTP::HTTP() {}
 
@@ -26,13 +29,21 @@ void	HTTP::poll_loop()
 {
 	int poll_status;
 	Socket sock;
-	while(1)
+	while(is_run)
 	{
-		poll_status = poll(sock.poll_socket_fds.data(), sock.poll_socket_fds.size(), -1);//poll will always be 0 if nth is detected, -1 to tell poll to wait infinitely wif no max time
+		poll_status = poll(Socket::poll_socket_fds.data(), Socket::poll_socket_fds.size(), -1);//poll will always be 0 if nth is detected, -1 to tell poll to wait infinitely wif no max time
 		if(poll_status == 0)
 			continue;
 		else if (poll_status < 0)
-			throw std::runtime_error("Error: poll error");
+		{
+			if (is_run)
+				throw std::runtime_error("Error: poll error");
+			else {
+				for(size_t i = 0; i < Socket::listen_socket_fds.size(); i++) {
+					close(Socket::listen_socket_fds[i]);
+				}
+			}
+		}
 		else
 			sock.process_req(this->all_sockets_list, Servers);
 	}
