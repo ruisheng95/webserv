@@ -50,6 +50,14 @@ void	Response::main_response_function(Request request, vector<Server> &Servers)
 	else
 		handle_error(request, "405", respective_server);
 }
+
+void	Response::error_response_function()
+{
+	Request dummyRequest;
+	Server dummyServer;
+	dummyRequest.set_http_ver("HTTP/1.1");
+	handle_error(dummyRequest, "500", dummyServer);
+}
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////response making helpers/////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////

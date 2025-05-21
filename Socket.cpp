@@ -10,7 +10,6 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
-#include <errno.h>
 using std::vector;
 using std::string;
 using std::pair;
@@ -120,28 +119,6 @@ int	Socket::setup_socket(string host, string port, struct addrinfo **reso)
 ////////////////////////////////////////process request////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-// Subject PDF don't allow more than one select function 🤷‍♂️
-//  void	Socket::better_receive_data(Socket &socket)
-// {
-// 	char buffer[900000] = {0}; //HARDCODE AH
-// 	ssize_t bytes_received;
-// 	while ((bytes_received = recv(socket.sock_fd, buffer, sizeof(buffer), 0)) > 0) {
-// 		fd_set readfds;
-// 		struct timeval timeout;
-// 		timeout.tv_sec = 0;
-//         timeout.tv_usec = 20000; // 20ms timeout
-// 		FD_ZERO(&readfds);
-//         FD_SET(socket.sock_fd, &readfds);
-// 		int result = select(socket.sock_fd + 1, &readfds, NULL,NULL,&timeout);
-// 		if(bytes_received > 0)
-// 			socket.get_req().set_data(socket.get_req().get_data().append(buffer, bytes_received));
-// 		if (result <= 0) {
-// 			break;
-// 		}
-// 	}
-// 	socket.get_req().parse_request_data_main(socket.sock_fd);
-// }
-
 int		Socket::find_content_length(string request)
 {
 	size_t pos = request.find("Content-Length:");
@@ -159,8 +136,15 @@ void	Socket::receive_data(Socket &socket)
 	while(contentlen > 0)
 	{
 		ssize_t bytes_received = recv(socket.sock_fd, buffer, sizeof(buffer), 0);
-		if(bytes_received < 0)
-			throw std::runtime_error("Error: recv failed");
+		// Uncomment to emulate recv failure
+		// int num = rand() % 2;
+		// if (num == 1) {
+		// 	bytes_received = -1;
+		// }
+		if(bytes_received < 0) {
+			socket.get_req().set_data("");
+			return ;
+		}
 		socket.get_req().set_data(socket.get_req().get_data().append(buffer, bytes_received));
 		string curr_req = socket.get_req().get_data();
 		contentlen = find_content_length(curr_req);
@@ -209,11 +193,16 @@ void	Socket::process_req_POLLOUT(int i, vector<Server> Servers) //output stuff a
 {
 	int connect_index = get_io_connection(poll_socket_fds[i].fd);
 	Socket socket = io_connections[connect_index];
-	if(socket.get_req().get_req_data().length() <= 0)
-			throw std::runtime_error("Error: no request found");
-	this->response.main_response_function(socket.get_req(), Servers);
-	if(send(socket.sock_fd, this->response.get_response_data().c_str(), this->response.get_response_data().size(), 0) == -1)
-		throw std::runtime_error("Error: send failed");
+	if(socket.get_req().get_req_data().length() == 0) {
+		this->response.error_response_function();
+	} else {
+		this->response.main_response_function(socket.get_req(), Servers);
+	}
+	ssize_t result = send(socket.sock_fd, this->response.get_response_data().c_str(), this->response.get_response_data().size(), 0);
+	if (result == -1) {
+		cout << "Send failed for client" << endl;
+	}
+	// Regardless Send success or fail, the fd will be closed
 	close_fd(poll_socket_fds[i].fd, i); //see explanation in function
 }
 

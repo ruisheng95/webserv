@@ -187,3 +187,8 @@ void	print_request(Request request)
 	cout << request.get_body() << endl;
 	cout << "==================" << endl;
 }
+
+void Request::set_http_ver(string http_ver)
+{
+	this->http_ver = http_ver;
+}

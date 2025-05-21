@@ -27,6 +27,7 @@ class Request
 		~Request();
 		std::string	get_data();
 		void	set_data(std::string newdata);
+		void	set_http_ver(std::string http_ver);
 
 		//get
 		std::string	get_req_data();
@@ -61,6 +62,7 @@ class Response //include this here first cuz somehow incomplete type
 		std::string	get_response_data();
 
 		void	main_response_function(Request request, std::vector<Server> &Servers);
+		void	error_response_function();
 
 		void	do_indexing(Request request, Server &server, Location *location, std::string resource_path);
 		void	get_file_contents(Request request, Server &server, std::string resource_path);
@@ -110,7 +112,6 @@ class Socket
 
 		//request stuff
 		void	receive_data(Socket &socket);
-		void 	better_receive_data(Socket &socket);
 		void	process_req_POLLIN_connection_socket(int i);
 		void	process_req_POLLIN_listen_socket(int i, std::vector<std::pair<int, struct addrinfo> > &sockets_addrinfo);
 		void	process_req_POLLOUT(int i, std::vector<Server> Servers); //output stuff and close socket
