@@ -126,10 +126,15 @@ elif request_method == "GET":
 
 	print(startline, end = "")
 	print("Content-Type: " + content_type + "\r\n", end="")
-	print("Connection: keep-alive\r\n", end="")
-	print("Content-Length: " + str(len(response_body)) + "\r\n", end="")
-	print("\r\n", end="")
-	sys.stdout.buffer.write(response_body)
+	#print("Connection: keep-alive\r\n", end="")
+	if content_type in ("image/jpeg", "image/png", "image/gif"):
+		print("Content-Length: " + str(os.path.getsize(public_files_dir + file_name)) + "\r\n", end="")
+		print("\r\n", end="", flush=True) #need to flush out first cuz the buffer write ft below is gay asf converts all the output to binary
+		sys.stdout.buffer.write(response_body)
+	else:
+		print("Content-Length: " + str(len(response_body)) + "\r\n", end="")
+		print("\r\n", end="")
+		print(response_body)
 
 	# print(startline, end="", file=sys.stderr)
 	# print("Content-Type: " + content_type + "\r\n", end="", file=sys.stderr)

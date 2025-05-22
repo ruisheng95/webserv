@@ -94,12 +94,12 @@ char	**Cgi::config_env(Request &request)
 
 string	Cgi::get_cgi_output(int pipefd)
 {
-	char buffer[1001];
+	char buffer[10000];
 	string res;
 	int bytesread;
-	memset(buffer, 0, 1001);
-	while((bytesread = read(pipefd, buffer, 1000) > 0))
-		res += buffer;
+	memset(buffer, 0, 10000);
+	while((bytesread = read(pipefd, buffer, 10000)) > 0)
+		res.append(buffer, bytesread);
 	return res;
 }
 

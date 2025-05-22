@@ -49,6 +49,7 @@ void	Response::main_response_function(Request request, vector<Server> &Servers)
 		handle_delete(request, respective_server);
 	else
 		handle_error(request, "405", respective_server);
+	std::cout << this->response_data << std::endl;
 }
 
 void	Response::error_response_function()
