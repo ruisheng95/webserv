@@ -71,5 +71,8 @@ server {
 		allowed_methods GET POST;
 		autoindex on;
 	}
+
+	location .bla{		
+	}
 }
 

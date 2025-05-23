@@ -49,7 +49,7 @@ void	Response::main_response_function(Request request, vector<Server> &Servers)
 		handle_delete(request, respective_server);
 	else
 		handle_error(request, "405", respective_server);
-	std::cout << this->response_data << std::endl;
+	//std::cout << this->response_data << std::endl;
 }
 
 void	Response::error_response_function()
@@ -139,16 +139,17 @@ void	Response::do_indexing(Request request, Server &server, Location *location, 
 	vector<string>::iterator ite = location->get_index().end();
 	while(it != ite)
 	{
-		// Empty file is a valid content. Check error code instead
+		//Empty file is a valid content. Check error code instead
 		file_contents = parse_resources(resource_path + *it);
-		if (this->errorCode != "" && it + 1 != ite) {
-			// If error, and not last index file (so that error code can go to handle_error func)
-			// Reset error code, try next file
+		if (this->errorCode != "" && it + 1 != ite)
+		{
+			//If error, and not last index file (so that error code can go to handle_error func)
+			//Reset error code, try next file
 			this->errorCode = "";
 			it++;
-		} else {
-			break;
 		}
+		else
+			break;
 	}
 	if (this->errorCode != "")
 		handle_error(request, this->errorCode, server);
@@ -381,11 +382,23 @@ Location *Response::get_location(Request request, Server &server)
 	int relative_match_index = 0;
 	int relative_match_flag = 0;
 	int current_index = 0;
+	size_t dotpos;
 	for(vector<Location>::iterator it = server.get_location().begin(); it != server.get_location().end(); it++)
 	{
 		if(it->get_path() == request.get_target())
 			return(&(*it));
-		if(it->get_path() == request.get_target().substr(0, it->get_path().length()) && relative_match_flag == 0)
+		else if(it->get_path().find(".") != std::string::npos && (dotpos = request.get_target().find_last_of(".")) != std::string::npos)
+		{
+			//std::cout << "location path: " << it->get_path() << std::endl;
+			//std::cout << "request path: " << request.get_target() << std::endl;
+			string extension_part = request.get_target().substr(dotpos, request.get_target().length() - dotpos);
+			if(extension_part.find("/") == string::npos && extension_part == it->get_path())
+			{
+				//std::cout << "entered return block" << std::endl;
+				return(&(*it));
+			}
+		}
+		else if(it->get_path() == request.get_target().substr(0, it->get_path().length()) && relative_match_flag == 0)
 		{
 			relative_match_index = current_index;
 			relative_match_flag = 1;
@@ -445,6 +458,7 @@ void	Response::handle_return(Request request, Server &server, Location &location
 	this->response_data += get_start_line(request, status_code, server);
 	this->response_data += "Location: " + path + "\r\n" + get_headers("", "text/html");
 	//surprisingly this one dn code the website can just change the location to the path then it will move u there liao wth
+	std::cout << "finish running handle return" << std::endl;
 }
 
 int	Response::check_request_body_valid(Request &request)

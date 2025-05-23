@@ -238,8 +238,8 @@ void	Location::parse_location_main(size_t &pos, string file_data)
 	//skip whitespace
 	skip_whitespaces(pos, file_data);
 
-	//check for '/'
-	if(file_data[pos] != '/')
+	//check for '/' and '.'
+	if(file_data[pos] != '/' && file_data[pos] != '.')
 		throw std::runtime_error("Error: expected '/' after 'location'");
 	
 	//get path
