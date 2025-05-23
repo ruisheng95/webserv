@@ -10,7 +10,7 @@ response_body = "<!DOCTYPE html>"
 response_body += "<html>"
 response_body += "<head></head>"
 response_body += "<body><center><h1> Webpage from the cgi script for php files</h1></center></body>"
-response_body += "<center><img src = \"../cgi/public_files/furina.jpg\" alt = \"firefly picture\"><center>"
+response_body += "<center><img src = \"../cgi/public_files/furina.jpg\" alt = \"furina picture\"><center>"
 response_body += "</html>"
 content_type = "text/html"
 

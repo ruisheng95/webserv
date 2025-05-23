@@ -67,9 +67,15 @@ server {
 server {
 	listen 127.0.0.1:8300;
 
-	location /{
+	location /cgi {
+		allowed_methods GET POST DELETE;
+		cgi_pass /cgi/upload.py;
+		index index.htm index.html;
+	}
+
+	location /cgi{
 		allowed_methods GET POST;
-		autoindex on;
+		cgi_pass /cgi/upload.py;
 	}
 
 	location .php{

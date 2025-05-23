@@ -10,9 +10,6 @@ cgitb.enable()
 
 public_files_dir = "./cgi/public_files/"
 
-
-# below is smth half working, i try to create another version
-
 #get request method
 #os is a std lib thing that can help get stuff abt the operating system
 request_method = os.environ.get("REQUEST_METHOD")
@@ -21,8 +18,7 @@ route = os.environ.get("ROUTE")
 #this gay ass function helps u read from stdin and sort the request body for u
 #wtf i feel like c and cpp is a joke now
 form = cgi.FieldStorage()
-# while True: 
-# 	pass
+
 if request_method == "POST":
 	if "file" in form:
 
@@ -135,6 +131,8 @@ elif request_method == "GET":
 		print("Content-Length: " + str(len(response_body)) + "\r\n", end="")
 		print("\r\n", end="")
 		print(response_body)
+
+	os.close(1)
 
 	# print(startline, end="", file=sys.stderr)
 	# print("Content-Type: " + content_type + "\r\n", end="", file=sys.stderr)

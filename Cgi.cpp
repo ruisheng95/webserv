@@ -159,6 +159,7 @@ void	Cgi::Cgi_main(Request &request, Response &response, Location &location, Ser
 		close(pipefd_input[0]);
 		close(pipefd_input[1]);
 		close(pipefd_output[1]);
+		string cgi_output = get_cgi_output(pipefd_output[0]);
 		int result = waitpid_with_timeout(pid, 5);
 		if(result <= 0)
 		{
@@ -171,9 +172,7 @@ void	Cgi::Cgi_main(Request &request, Response &response, Location &location, Ser
 			response.handle_error(request, "500", server);
 		}
 		else
-		{
-			response.set_response(get_cgi_output(pipefd_output[0]));
-		}
+			response.set_response(cgi_output);
 		close(pipefd_output[0]);
 	}
 }
