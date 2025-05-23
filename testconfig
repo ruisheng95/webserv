@@ -72,7 +72,9 @@ server {
 		autoindex on;
 	}
 
-	location .bla{		
+	location .php{
+		allowed_methods GET POST;
+		cgi_pass /cgi/cgi2.py;
 	}
 }
 
