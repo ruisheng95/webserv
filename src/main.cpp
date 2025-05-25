@@ -13,7 +13,6 @@ void	signal_handler(int sig)
 //damn i wish every file and code can be as short as this
 int main(int argc, char **argv)
 {
-	Config config("testconfig");
 	HTTP	http;
 	try
 	{
