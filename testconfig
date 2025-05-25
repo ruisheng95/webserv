@@ -73,9 +73,9 @@ server {
 		index index.htm index.html;
 	}
 
-	location /cgi{
+	location /{
 		allowed_methods GET POST;
-		cgi_pass /cgi/upload.py;
+		autoindex on;
 	}
 
 	location .php{

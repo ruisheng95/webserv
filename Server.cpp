@@ -73,26 +73,26 @@ void Server::set_get_location(vector<Location> location)
 
 vector<pair<string, string> > Server::socket_addr; // need this for definition cannot just put inside header it wont compile rip
 
-void	print_server(Server &server)
-{
-    cout << "=======================================" << endl;
-    cout << "Server Details:" << endl;
-    cout << "Host: " << server.get_host() << endl;
-    cout << "Port: " << server.get_port() << endl;
-    cout << "Server Name: " << server.get_server_name() << endl;
-    cout << "Client Body Size: " << server.get_client_max_body_size() << endl;
+// void	print_server(Server &server)
+// {
+//     cout << "=======================================" << endl;
+//     cout << "Server Details:" << endl;
+//     cout << "Host: " << server.get_host() << endl;
+//     cout << "Port: " << server.get_port() << endl;
+//     cout << "Server Name: " << server.get_server_name() << endl;
+//     cout << "Client Body Size: " << server.get_client_max_body_size() << endl;
 
-	cout << endl;
-    cout << "Error Pages:" << endl;
-	map<string,string> error_pages= server.get_error_pages();
-    for (map<string,string>::iterator it = error_pages.begin(); it != error_pages.end(); it++) {
-        cout << "Error Code: " << it->first << " -> Page: " << it->second << endl;
-    }
+// 	cout << endl;
+//     cout << "Error Pages:" << endl;
+// 	map<string,string> error_pages= server.get_error_pages();
+//     for (map<string,string>::iterator it = error_pages.begin(); it != error_pages.end(); it++) {
+//         cout << "Error Code: " << it->first << " -> Page: " << it->second << endl;
+//     }
 
-    cout << endl;
-	cout << "Locations: " << endl;
-	for (vector<Location>::iterator it = server.get_location().begin(); it != server.get_location().end(); it++)
-		it->print_location();
+//     cout << endl;
+// 	cout << "Locations: " << endl;
+// 	for (vector<Location>::iterator it = server.get_location().begin(); it != server.get_location().end(); it++)
+// 		it->print_location();
 
-    cout << "=======================================" << endl;
-}
+//     cout << "=======================================" << endl;
+// }

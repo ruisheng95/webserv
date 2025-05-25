@@ -103,7 +103,6 @@ void Config::parse_server_name_part(size_t &pos, Server &newServer)
 	else
 		skip_whitespaces(pos);
 
-	//idk wat to do wif this lol aiya just substr the part first la
 	size_t server_name_delim = file_data.find_first_of(';', pos);
 	if(server_name_delim == pos)
 		throw std::invalid_argument("Error: server name part must at least contain smth");
@@ -126,7 +125,6 @@ void Config::parse_client_body_size(size_t &pos, Server &newServer)
 		skip_whitespaces(pos);
 	}
 
-	//idk wat to do wif this lol aiya just substr the part first la
 	size_t client_body_size_delim = file_data.find_first_of(';', pos);
 	if(client_body_size_delim == pos)
 		throw std::invalid_argument("Error: client_max_body_size part must at least contain smth");

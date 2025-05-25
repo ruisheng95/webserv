@@ -119,20 +119,21 @@ elif request_method == "GET":
 		response_body += "</html>"
 		content_type = "text/html"
 
-
 	print(startline, end = "")
 	print("Content-Type: " + content_type + "\r\n", end="")
 	#print("Connection: keep-alive\r\n", end="")
 	if content_type in ("image/jpeg", "image/png", "image/gif"):
 		print("Content-Length: " + str(os.path.getsize(public_files_dir + file_name)) + "\r\n", end="")
-		print("\r\n", end="", flush=True) #need to flush out first cuz the buffer write ft below is gay asf converts all the output to binary
+		print("\r\n", end="", flush=True) #need to flush out first cuz the buffer write ft below converts all the output to binary
 		sys.stdout.buffer.write(response_body)
 	else:
 		print("Content-Length: " + str(len(response_body)) + "\r\n", end="")
 		print("\r\n", end="")
 		print(response_body)
 
-	os.close(1)
+	if is_fd_open(1):
+		os.close(1)
+		
 
 	# print(startline, end="", file=sys.stderr)
 	# print("Content-Type: " + content_type + "\r\n", end="", file=sys.stderr)
