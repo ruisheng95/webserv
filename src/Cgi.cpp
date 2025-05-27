@@ -32,41 +32,41 @@ static std::string replaceAll(std::string str, const std::string& from, const st
 }
 
 // I love Deepseek AI
-int waitpid_with_timeout(pid_t pid, unsigned int seconds) {
-	int sel = 1;
-	int selectPid = fork();
-	int pidStatus = 0;
-	int selectStatus = 0;
-	if(selectPid == 0) {
-		fd_set readfds;
-		struct timeval timeout;
+// int waitpid_with_timeout(pid_t pid, unsigned int seconds) {
+// 	int sel = 1;
+// 	int selectPid = fork();
+// 	int pidStatus = 0;
+// 	int selectStatus = 0;
+// 	if(selectPid == 0) {
+// 		fd_set readfds;
+// 		struct timeval timeout;
 
-		FD_ZERO(&readfds);
-        // We need some fd to watch - using stdin (0) as dummy
-        FD_SET(0, &readfds);
+// 		FD_ZERO(&readfds);
+//         // We need some fd to watch - using stdin (0) as dummy
+//         FD_SET(0, &readfds);
         
-        timeout.tv_sec = seconds;
-        timeout.tv_usec = 0;
-        sel = select(1, &readfds, NULL, NULL, &timeout);
-		if (sel == 0) exit(2);  // Timeout
-        if (sel == -1) exit(1); // Error
-		exit(0);
-	}
+//         timeout.tv_sec = seconds;
+//         timeout.tv_usec = 0;
+//         sel = select(1, &readfds, NULL, NULL, &timeout);
+// 		if (sel == 0) exit(2);  // Timeout
+//         if (sel == -1) exit(1); // Error
+// 		exit(0);
+// 	}
     
-    while (true) {
-        int result = waitpid(pid, &pidStatus, WNOHANG);
-		int resultSelect = waitpid(selectPid, &selectStatus, WNOHANG);
+//     while (true) {
+//         int result = waitpid(pid, &pidStatus, WNOHANG);
+// 		int resultSelect = waitpid(selectPid, &selectStatus, WNOHANG);
         
-        if (result == pid) return pid;
-        if (result == -1) return -1;
-		if (resultSelect == -1) {
-			if(WIFEXITED(selectStatus) && WEXITSTATUS(selectStatus) == 2) {
-				return -2;
-			}
-			return -1;
-		}
-    }
-}
+//         if (result == pid) return pid;
+//         if (result == -1) return -1;
+// 		if (resultSelect == -1) {
+// 			if(WIFEXITED(selectStatus) && WEXITSTATUS(selectStatus) == 2) {
+// 				return -2;
+// 			}
+// 			return -1;
+// 		}
+//     }
+// }
 
 char	**Cgi::config_env(Request &request)
 {
@@ -160,7 +160,7 @@ void	Cgi::Cgi_main(Request &request, Response &response, Location &location, Ser
 		close(pipefd_input[1]);
 		close(pipefd_output[1]);
 		string cgi_output = get_cgi_output(pipefd_output[0]);
-		int result = waitpid_with_timeout(pid, 5);
+		int result = waitpid(pid, &exit_status, 0);
 		if(result <= 0)
 		{
 			// std::cout << result << std::endl;
