@@ -15,8 +15,6 @@ public_files_dir = "./cgi/public_files/"
 request_method = os.environ.get("REQUEST_METHOD")
 route = os.environ.get("ROUTE")
 
-#this gay ass function helps u read from stdin and sort the request body for u
-#wtf i feel like c and cpp is a joke now
 form = cgi.FieldStorage()
 
 if request_method == "POST":
@@ -133,14 +131,6 @@ elif request_method == "GET":
 
 	if is_fd_open(1):
 		os.close(1)
-		
-
-	# print(startline, end="", file=sys.stderr)
-	# print("Content-Type: " + content_type + "\r\n", end="", file=sys.stderr)
-	# print("Connection: keep-alive\r\n", end="", file=sys.stderr)
-	# print("Content-Length: " + str(len(response_body)) + "\r\n", end="", file=sys.stderr)
-	# print("\r\n", end="", file=sys.stderr)
-	# print(response_body, file=sys.stderr)
 
 elif request_method == "DELETE":
 	# print("HTTP/1.1 200 OK\r\n", end="")
@@ -163,44 +153,3 @@ elif request_method == "DELETE":
 	print("Content-Length: " + str(len(response_body)) + "\r\n", end="")
 	print("\r\n", end="")
 	print(response_body)
-
-
-
-#rip this one oso not working
-
-# body = b''
-
-# while True:
-# 	data = sys.stdin.buffer.read(1024)
-# 	if not data:
-# 		break
-# 	body += data
-
-# body_arr = body.split(b'\r\n')
-# bound = body_arr[0]
-# filename_start = body_arr[1].find(b'filename="') + len(b'filename="')
-# filename_end = body_arr[1].find(b'"', filename_start)
-# filename = body_arr[1][filename_start:filename_end]
-
-# file_contents_start = body.find(b'\r\n\r\n') + 4
-# file_contents_end = body.find(b'--', file_contents_start)
-# file_contents = body[file_contents_start:file_contents_end]
-
-# with open(public_files_dir + filename.decode("utf-8"), "wb") as newfile:
-# 	newfile.write(file_contents)
-
-# content_type = "text/html"
-# msg = "Successfully added file!"
-
-# response_body = "<!DOCTYPE html>"
-# response_body += "<html>"
-# response_body += "<head></head>"
-# response_body += "<body><center><h1>" + msg + "</h1></center></body>"
-# response_body += "</html>"
-
-# print("HTTP/1.1 200 OK\r\n", end="")
-# print("Content-Type: " + content_type + "\r\n", end="")
-# print("Connection: keep-alive\r\n", end="")
-# print("Content-Length: " + str(len(response_body)) + "\r\n", end="")
-# print("\r\n", end="")
-# print(response_body)

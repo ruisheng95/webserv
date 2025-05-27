@@ -1,6 +1,5 @@
 #include "Socket.hpp"
 #include "Server.hpp"
-#include "webserv.hpp"
 #include <cstring>
 #include <netdb.h>
 #include <stdexcept>
@@ -15,6 +14,8 @@ using std::string;
 using std::pair;
 using std::cout;
 using std::endl;
+
+#define LISTEN_BACKLOG 1000
 
 ssize_t my_atoi(std::string s);
 

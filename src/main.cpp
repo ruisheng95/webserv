@@ -10,7 +10,6 @@ void	signal_handler(int sig)
 	HTTP::is_run = false;
 }
 
-//damn i wish every file and code can be as short as this
 int main(int argc, char **argv)
 {
 	HTTP	http;

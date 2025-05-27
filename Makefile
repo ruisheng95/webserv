@@ -4,7 +4,7 @@ Request.cpp Location.cpp Response.cpp Cgi.cpp Autoindex.cpp utils.cpp)
 
 HEADERS = \
 $(addprefix include/, Config.hpp HTTP.hpp Server.hpp Socket.hpp \
-Request.hpp Location.hpp Response.hpp Cgi.hpp Autoindex.hpp webserv.hpp)
+Request.hpp Location.hpp Response.hpp Cgi.hpp Autoindex.hpp)
 
 SRC_DIR = src
 
