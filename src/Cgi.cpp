@@ -105,9 +105,8 @@ string	Cgi::get_cgi_output(int pipefd)
 
 int 	Cgi::check_cgi_hang(Request &request, Response &response, Location &location, Server &server)
 {
-	(void)response;
-	(void)server;
-	int flag = 1;
+	(void) response;
+	(void) server;
 	string cgi_path = "." + location.get_cgi_pass();
 	pid_t pid;
 	int pipefd_input[2];
@@ -122,7 +121,7 @@ int 	Cgi::check_cgi_hang(Request &request, Response &response, Location &locatio
 
 	//cout << "REQUEST BODY: " << request.get_body() << "\n----------------------------------" << endl;
 	if(pipe(pipefd_input) == -1 || pipe(pipefd_output) == -1)
-		flag = -1;
+		return -1;
 	else
 	{
 		pid = fork();
@@ -172,11 +171,13 @@ int 	Cgi::check_cgi_hang(Request &request, Response &response, Location &locatio
 				kill(pid, SIGKILL);
 				waitpid(pid, &exit_status, 0);  // Clean up zombie
 			}
-			flag = -1;
+			return -1;
 		}
+		else
+			return 1;
 		close(pipefd_output[0]);
 	}
-	return flag;
+	return -1;
 }
 
 void	Cgi::Cgi_main(Request &request, Response &response, Location &location, Server &server)
