@@ -1,4 +1,8 @@
-print("invalid responseeeeeeeeeeeeeee")
+#!/usr/bin/python3
 
-if is_fd_open(1):
-	os.close(1)
+import os
+import sys
+import cgi
+import cgitb
+
+print("invalid responseeeeeeeeeeeeeee")

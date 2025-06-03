@@ -80,6 +80,19 @@ int	Socket::setup_socket(string host, string port, struct addrinfo **reso)
 	if((sockfd = socket((*reso)->ai_family, (*reso)->ai_socktype, (*reso)->ai_protocol)) < 0)
 		throw std::runtime_error("Error: Socket creation failed");
 
+	//set socket nonblock
+	int flags;
+    if ((flags = fcntl(sockfd, F_GETFL, 0)) == -1)
+	{
+        close(sockfd);
+        throw std::runtime_error("Error: fcntl(F_GETFL) failed");
+    }
+    if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) < 0)
+	{
+        close(sockfd);
+        throw std::runtime_error("Error: fcntl(O_NONBLOCK) failed");
+    }
+
 	//set socket options (so we can bind without time delay after socket is closed)
 	int opt = 1;
 	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
@@ -179,6 +192,19 @@ void	Socket::process_req_POLLIN_listen_socket(int i ,vector<pair<int, struct add
 	if((accept_socket_fd = accept(poll_socket_fds[i].fd,  (struct sockaddr*) &res->ai_addr, &res->ai_addrlen)) <= 0)
 		throw std::runtime_error("Error: accept socket failed");
 	
+	//set nonblock
+	// int flags;
+    // if ((flags = fcntl(accept_socket_fd, F_GETFL, 0)) == -1)
+	// {
+    //     close(accept_socket_fd);
+    //     throw std::runtime_error("Error: fcntl(F_GETFL) failed");
+    // }
+    // if (fcntl(accept_socket_fd, F_SETFL, flags | O_NONBLOCK) < 0)
+	// {
+    //     close(accept_socket_fd);
+    //     throw std::runtime_error("Error: fcntl(O_NONBLOCK) failed");
+    // }
+
 	//add accept socket to our new connection
 	connection_socket.set_sock_fd(accept_socket_fd);
 	io_connections.push_back(connection_socket);

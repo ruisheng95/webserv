@@ -16,26 +16,30 @@ server {
 server {
 	listen 127.0.0.1:8090;
 	error_pages 404 /404.html;
-	error_pages 403 /403.html;
-	client_max_body_size 12;
+	error_pages 405 /405.html;
 
 	location / {
 		allowed_methods GET POST;
-		root /server_stuff;
-		index index.htm index.html;
+		autoindex on;
 	}
-}
 
-server {
-	listen 127.0.0.1:8090;
-	error_pages 404 /404.html;
-	error_pages 403 /403.html;
-	server_name abc;
-
-	location / {
+	location /index{
 		allowed_methods GET POST;
+		index index.htm index.html;
 		root /server_stuff;
-		index webpage1.html;
+	}
+
+	location /noindex{
+		allowed_methods GET POST;
+	}
+
+	location .ret{
+		allowed_methods GET POST;
+		return https://github.com/ruisheng95/;
+	}
+
+	location .nomethod{
+		allowed_methods POST;
 	}
 }
 
@@ -43,14 +47,15 @@ server {
 	listen 127.0.0.1:8100;
 
 	location / {
-		allowed_methods POST;
 		root /server_stuff;
-		index index.htm index.html;
+		autoindex on;
+		allowed_methods GET POST;
 	}
 }
 
 server {
 	listen 127.0.0.1:8200;
+	client_max_body_size 200;
 
 	location /cgi {
 		allowed_methods GET POST DELETE;

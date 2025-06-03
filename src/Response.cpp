@@ -273,6 +273,8 @@ void	Response::handle_get(Request request, Server &server)
 void	Response::handle_post(Request request, Server &server)
 {
 	Location *location = get_location(request, server);
+	//std::cout << "contentlen: " << request.get_content_length() << std::endl;
+	//std::cout << "cbs: " << my_atoi(server.get_client_max_body_size()) << std::endl;
 	if(!location)
 		handle_error(request, "403", server);
 	else if(check_allowed_methods("POST", *location) == 0) //check allowed methods
@@ -458,7 +460,7 @@ void	Response::handle_return(Request request, Server &server, Location &location
 	this->response_data += get_start_line(request, status_code, server);
 	this->response_data += "Location: " + path + "\r\n" + get_headers("", "text/html");
 	//surprisingly this one dn code the website can just change the location to the path then it will move u there liao wth
-	std::cout << "finish running handle return" << std::endl;
+	//std::cout << "finish running handle return" << std::endl;
 }
 
 int	Response::check_request_body_valid(Request &request)
