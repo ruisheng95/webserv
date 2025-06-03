@@ -93,9 +93,9 @@ server {
 		cgi_pass /cgi/invalid.py;
 	}
 
-	location .noclose{
+	location .hang{
 		allowed_methods GET POST;
-		cgi_pass /cgi/noclose.py;
+		cgi_pass /cgi/hang.py;
 	}
 }
 

@@ -110,6 +110,7 @@ int Cgi::check_valid_response(std::string str)
 	return 1;
 }
 
+
 int 	Cgi::check_cgi_hang(Request &request, Response &response, Location &location, Server &server)
 {
 	int pid = fork();
@@ -183,7 +184,7 @@ int 	Cgi::check_cgi_hang(Request &request, Response &response, Location &locatio
 		}
 	}
 	else
-	{
+	{	
 		int result = waitpid_with_timeout(pid, 5);
 		if(result <= 0)
 		{
@@ -198,6 +199,7 @@ int 	Cgi::check_cgi_hang(Request &request, Response &response, Location &locatio
 		return 1;
 	}
 }
+
 
 void	Cgi::Cgi_main(Request &request, Response &response, Location &location, Server &server)
 {

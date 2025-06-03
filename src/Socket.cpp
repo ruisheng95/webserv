@@ -10,6 +10,7 @@
 #include <iostream>
 #include <algorithm>
 #include <limits.h>
+#include <fcntl.h>
 
 using std::vector;
 using std::string;
@@ -135,7 +136,7 @@ int		Socket::find_content_length(string request)
 void	Socket::receive_data(Socket &socket)
 {
 	char buffer[900000] = {0}; //HARDCODE AH
-	int contentlen = INT_MAX;
+	int contentlen = 1;
 	int bodystart = -1;
 	while(contentlen > 0)
 	{
@@ -151,12 +152,10 @@ void	Socket::receive_data(Socket &socket)
 		}
 		socket.get_req().set_data(socket.get_req().get_data().append(buffer, bytes_received));
 		string curr_req = socket.get_req().get_data();
-		if(contentlen == INT_MAX)
-			contentlen = find_content_length(curr_req);
+		contentlen = find_content_length(curr_req);
 		if (contentlen == 0)
 			break;
-		if(bodystart == -1)
-			bodystart = curr_req.find("\r\n\r\n") + 4;
+		bodystart = curr_req.find("\r\n\r\n") + 4;
 		contentlen -= (curr_req.size() - bodystart);
 	}
 	socket.get_req().parse_request_data_main(socket.sock_fd);
