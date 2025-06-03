@@ -82,5 +82,20 @@ server {
 		allowed_methods GET POST;
 		cgi_pass /cgi/cgi2.py;
 	}
+
+	location .empty{
+		allowed_methods GET POST;
+		cgi_pass /cgi/empty.py;
+	}
+
+	location .invalid{
+		allowed_methods GET POST;
+		cgi_pass /cgi/invalid.py;
+	}
+
+	location .noclose{
+		allowed_methods GET POST;
+		cgi_pass /cgi/noclose.py;
+	}
 }
 

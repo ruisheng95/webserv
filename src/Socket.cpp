@@ -9,6 +9,8 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <limits.h>
+
 using std::vector;
 using std::string;
 using std::pair;
@@ -133,7 +135,8 @@ int		Socket::find_content_length(string request)
 void	Socket::receive_data(Socket &socket)
 {
 	char buffer[900000] = {0}; //HARDCODE AH
-	int contentlen = 1;
+	int contentlen = INT_MAX;
+	int bodystart = -1;
 	while(contentlen > 0)
 	{
 		ssize_t bytes_received = recv(socket.sock_fd, buffer, sizeof(buffer), 0);
@@ -148,10 +151,12 @@ void	Socket::receive_data(Socket &socket)
 		}
 		socket.get_req().set_data(socket.get_req().get_data().append(buffer, bytes_received));
 		string curr_req = socket.get_req().get_data();
-		contentlen = find_content_length(curr_req);
+		if(contentlen == INT_MAX)
+			contentlen = find_content_length(curr_req);
 		if (contentlen == 0)
 			break;
-		int bodystart = curr_req.find("\r\n\r\n") + 4;
+		if(bodystart == -1)
+			bodystart = curr_req.find("\r\n\r\n") + 4;
 		contentlen -= (curr_req.size() - bodystart);
 	}
 	socket.get_req().parse_request_data_main(socket.sock_fd);
@@ -188,10 +193,12 @@ void	Socket::process_req_POLLIN_connection_socket(int i)//process connection soc
 	int connect_index = get_io_connection(poll_socket_fds[i].fd);
 	receive_data(io_connections[connect_index]);
 	update_fd_event(poll_socket_fds[i].fd, POLLIN | POLLOUT); // need to update here instead of when accept() returns the socket if not will have error
+	//std::cout << "exit pollin" << std::endl;
 }
 
 void	Socket::process_req_POLLOUT(int i, vector<Server> Servers) //output stuff and close socket
 {
+	//std::cout << "enter pollout" << std::endl;
 	int connect_index = get_io_connection(poll_socket_fds[i].fd);
 	Socket socket = io_connections[connect_index];
 	if(socket.get_req().get_req_data().length() == 0) {

@@ -8,8 +8,8 @@ import cgitb
 #enable error handling in the browser for debugging
 cgitb.enable()
 
-while True:
-	pass
+# while True:
+# 	pass
 
 public_files_dir = "./cgi/public_files/"
 
