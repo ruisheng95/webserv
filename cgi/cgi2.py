@@ -19,6 +19,3 @@ print("Content-Type: " + content_type + "\r\n", end="")
 print("Content-Length: " + str(len(response_body)) + "\r\n", end="")
 print("\r\n", end="")
 print(response_body)
-
-if is_fd_open(1):
-	os.close(1)

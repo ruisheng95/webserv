@@ -140,6 +140,7 @@ void	Response::do_indexing(Request request, Server &server, Location *location, 
 	while(it != ite)
 	{
 		//Empty file is a valid content. Check error code instead
+		//std::cout << resource_path + *it << std::endl;
 		file_contents = parse_resources(resource_path + *it);
 		if (this->errorCode != "" && it + 1 != ite)
 		{
@@ -167,7 +168,7 @@ void	Response::handle_autoindex(Request request, Server &server, Location &locat
 	{
 		DIR *dir = opendir(path.c_str());
 		if(!dir)
-			handle_error(request, "403", server);
+			handle_error(request, "404", server);
 		else
 		{
 			string response_body;
@@ -381,8 +382,8 @@ Server	&Response::find_server(Request request, vector<Server>& Servers)
 
 Location *Response::get_location(Request request, Server &server)
 {
-	int relative_match_index = 0;
-	int relative_match_flag = 0;
+	size_t current_location_size = 0;
+	int stored_index = -1;
 	int current_index = 0;
 	size_t dotpos;
 	for(vector<Location>::iterator it = server.get_location().begin(); it != server.get_location().end(); it++)
@@ -400,15 +401,14 @@ Location *Response::get_location(Request request, Server &server)
 				return(&(*it));
 			}
 		}
-		else if(it->get_path() == request.get_target().substr(0, it->get_path().length()) && relative_match_flag == 0)
-		{
-			relative_match_index = current_index;
-			relative_match_flag = 1;
-		}
+		else if(it->get_path() == request.get_target().substr(0, it->get_path().length()) && it->get_path().size() > current_location_size)
+			stored_index = current_index;
 		current_index++;
 	}
-	if(relative_match_flag == 1)
-		return (&(server.get_location()[relative_match_index]));
+	// std::cout << "request path: " << request.get_target() << std::endl;
+	// std::cout << "location path: " << server.get_location()[stored_index].get_path() << std::endl;
+	if(stored_index > -1)
+		return (&(server.get_location()[stored_index]));
 	return NULL;
 }
 

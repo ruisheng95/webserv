@@ -1,0 +1,101 @@
+============== indexing ============= (port 8090)
+
+autoindexing:
+http://127.0.0.1:8090/src/
+
+indexing:
+http://127.0.0.1:8090/
+
+
+no_indexing:
+http://127.0.0.1:8090/server_stuff/
+
+
+=============== cgi ================== (port 8300)
+
+----------- upload -----------
+normal upload:
+http://127.0.0.1:8300/upload.html (uploaded test.txt and worked)
+
+binary upload:
+http://127.0.0.1:8300/upload.html (uploaded rr.gif and worked)
+
+big file upload:
+http://127.0.0.1:8300/upload.html (uploaded rr.gif and worked) (filesize = 6MB)
+
+----------- get -----------
+normal get:
+http://127.0.0.1:8300/cgi/public_files/test.txt
+
+binary get:
+http://127.0.0.1:8300/cgi/public_files/rr.gif
+
+no such file:
+http://127.0.0.1:8300/cgi/public_files/nosuchfile (error 404 shown as expected)
+
+no public_files in route:
+http://127.0.0.1:8300/cgi/rr.gif (same error 404 thrown)
+
+----------- other scripts -----------
+second normal script:
+http://127.0.0.1:8300/gsdgfsdf.php
+
+empty script:
+http://127.0.0.1:8300/ggfdgdfg.empty
+
+invalid script:
+http://127.0.0.1:8300/gsdgdfg.invalid
+
+hanging script:
+http://127.0.0.1:8300/gsdgfsdf.hang
+
+
+=============== client max body size ================== (port 8200)
+
+within size:
+http://127.0.0.1:8200/upload.html (uploaded test.txt and worked)
+
+more than size:
+http://127.0.0.1:8200/upload.html (uploaded rr.fig and correct error shown)
+
+
+=============== allowed method ================== (port 8090)
+
+allowed: 
+http://127.0.0.1:8200/upload.html
+
+not allowed:
+http://127.0.0.1:8090/fdgdfg.nomethod
+
+
+=============== error pages ================== (port 8100)
+
+valid:
+http://127.0.0.1:8100/fdsfsdf (displays custom 404 page)
+
+no such error page file:
+http://127.0.0.1:8100/css/dsdfsf (invalid 405 page so displayed the default one)
+
+
+=============== root ================== (port 8100 and 8150)
+
+normal:
+http://127.0.0.1:8100/
+
+no such root:
+http://127.0.0.1:8150/
+
+
+============== normal get ===============
+
+valid:
+http://127.0.0.1:8200/upload.html
+
+invalid:
+http://127.0.0.1:8200/nosuchfile
+
+
+============= return =============== (port 8090)
+
+normal:
+http://127.0.0.1:8090/gdfg.ret (directs to rng github lol)

@@ -15,21 +15,19 @@ server {
 
 server {
 	listen 127.0.0.1:8090;
-	error_pages 404 /404.html;
-	error_pages 405 /405.html;
 
-	location / {
-		allowed_methods GET POST;
-		autoindex on;
-	}
-
-	location /index{
+	location /{
 		allowed_methods GET POST;
 		index index.htm index.html;
 		root /server_stuff;
 	}
 
-	location /noindex{
+	location /src{
+		allowed_methods GET POST;
+		autoindex on;
+	}
+
+	location /server_stuff{
 		allowed_methods GET POST;
 	}
 
@@ -45,11 +43,27 @@ server {
 
 server {
 	listen 127.0.0.1:8100;
+	error_pages 404 /404.html;
+	error_pages 405 /nosuchfile.html;
 
 	location / {
 		root /server_stuff;
 		autoindex on;
 		allowed_methods GET POST;
+	}
+
+	location /css{
+		allowed_methods POST;
+	}
+}
+
+server {
+	listen 127.0.0.1:8150;
+
+	location / {
+		allowed_methods GET POST DELETE;
+		root /nosuchrootlol;
+		autoindex on;
 	}
 }
 
