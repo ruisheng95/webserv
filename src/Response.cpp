@@ -41,6 +41,7 @@ void	Response::main_response_function(Request request, vector<Server> &Servers)
 {
 	Server &respective_server = find_server(request, Servers);
 	this->errorCode = "";
+	this->response_data = "";
 	if(request.get_method() == "GET")
 		handle_get(request, respective_server);
 	else if(request.get_method() == "POST")
